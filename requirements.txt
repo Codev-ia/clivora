@@ -1,0 +1,16 @@
+asgiref==3.12.1
+Django==5.2.18
+django-environ==0.14.0
+djangorestframework==3.18.3
+gunicorn==26.2.0
+nh3==0.3.7
+pillow==12.3.0
+psycopg==3.3.6
+psycopg-binary==3.3.6
+sqlparse==0.6.0
+typing_extensions==4.16.0
+whitenoise==6.12.0
+weasyprint==66.0
+cryptography==46.0.3
+pyotp==2.9.0
+segno==1.6.6

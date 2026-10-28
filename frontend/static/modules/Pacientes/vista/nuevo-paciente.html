@@ -1,0 +1,407 @@
+<div class="patient-create-page">
+  <!-- Sticky action header at the top -->
+  <div class="patient-create-header">
+    <div class="patient-create-header-left">
+      <span class="back-pill-indicator">Creación</span>
+    </div>
+    <div class="patient-create-actions">
+      <button type="button" id="cancelNewPatientBtn" class="btn-secondary btn-anim-lift">Cancelar</button>
+      <button type="submit" form="newPatientForm" class="btn-primary btn-anim-lift">Guardar Paciente</button>
+    </div>
+  </div>
+
+  <form id="newPatientForm" class="patient-create-form">
+    <!-- Title Info Block with ID on the right -->
+    <div class="patient-create-info-block content-card">
+      <div class="info-block-main">
+        <h1 class="patient-create-title">Nuevo Paciente</h1>
+        <p class="patient-create-subtitle">Complete la información del paciente para crear su expediente médico.</p>
+      </div>
+      <div class="info-block-exp">
+        <div class="exp-badge-container">
+          <label for="newPatientExp">Número de expediente</label>
+          <div class="exp-id-wrapper">
+            <span class="exp-hash">#</span>
+            <input type="text" id="newPatientExp" name="exp" readonly placeholder="00000">
+          </div>
+          <span class="exp-help-text">Este campo es el ID del cliente</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Block: Información Básica -->
+    <section class="patient-create-section content-card">
+      <div class="section-header">
+        <div class="section-icon-bullet">1</div>
+        <h2>Información básica</h2>
+      </div>
+      <div class="form-grid form-grid-3">
+        <div class="form-group">
+          <label for="newPrimerApellido">Primer apellido <span class="required-star">*</span></label>
+          <input type="text" id="newPrimerApellido" name="primerApellido" placeholder="Ej: Hernández" data-charset="letters">
+        </div>
+        <div class="form-group">
+          <label for="newSegundoApellido">Segundo apellido</label>
+          <input type="text" id="newSegundoApellido" name="segundoApellido" placeholder="Ej: García" data-charset="letters">
+        </div>
+        <div class="form-group">
+          <label for="newNombres">Nombres <span class="required-star">*</span></label>
+          <input type="text" id="newNombres" name="nombres" placeholder="Ej: Carlos Antonio" data-charset="letters">
+        </div>
+      </div>
+
+      <div class="form-grid form-grid-3">
+        <div class="form-group">
+          <label for="newOrigenReferencia">Origen de referencia <span class="required-star">*</span></label>
+          <select id="newOrigenReferencia" name="origenReferencia">
+            <option value="">Seleccionar origen</option>
+            <option value="Página Web">Página Web</option>
+            <option value="Facebook">Facebook</option>
+            <option value="Instagram">Instagram</option>
+            <option value="Médico Externo">Médico Externo</option>
+            <option value="Correo Electrónico">Correo Electrónico</option>
+            <option value="Conocido/Amigo">Conocido/Amigo</option>
+            <option value="Médico Interno">Médico Interno</option>
+            <option value="WhatsApp">WhatsApp</option>
+            <option value="Médico Referenciador">Médico Referenciador</option>
+            <option value="SGMM">SGMM</option>
+            <option value="San José Valle Real">San José Valle Real</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="newFechaNacimiento">Fecha de nacimiento <span class="required-star">*</span></label>
+          <input type="date" id="newFechaNacimiento" name="fechaNacimiento">
+        </div>
+        <div class="form-group">
+          <label for="newReligion">Religión</label>
+          <input type="text" id="newReligion" name="religion" placeholder="Ej: Católica" data-charset="letters">
+        </div>
+      </div>
+
+      <div class="form-grid form-grid-3">
+        <div class="form-group">
+          <label for="newGenero">Género <span class="required-star">*</span></label>
+          <select id="newGenero" name="genero">
+            <option value="">Seleccionar género</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Femenino">Femenino</option>
+            <option value="Prefiero no decirlo">Prefiero no decirlo</option>
+          </select>
+        </div>
+        <div class="form-group" id="newTutorLegalGroup">
+          <label for="newTutorLegal">Tutor legal</label>
+          <input type="text" id="newTutorLegal" name="tutorLegal" placeholder="Ej: María López" data-charset="letters">
+        </div>
+
+        <!-- Conditional Selects based on Origen de Referencia -->
+        <div class="form-group hidden" id="newMedicoExternoGroup">
+          <label for="newMedicoExterno">Médico Externo de referencia</label>
+          <select id="newMedicoExterno" name="medicoExterno">
+            <option value="">Seleccionar médico externo</option>
+          </select>
+        </div>
+        <div class="form-group hidden" id="newMedicoInternoGroup">
+          <label for="newMedicoInterno">Médico Interno de referencia</label>
+          <select id="newMedicoInterno" name="medicoInterno">
+            <option value="">Seleccionar médico interno</option>
+          </select>
+        </div>
+        <div class="form-group hidden" id="newMedicoReferenciadorGroup">
+          <label for="newMedicoReferenciador">Médico Referenciador</label>
+          <select id="newMedicoReferenciador" name="medicoReferenciador">
+            <option value="">Seleccionar médico referenciador</option>
+          </select>
+        </div>
+        <div class="form-group hidden" id="newMedicoSanJoseGroup">
+          <label for="newMedicoSanJose">Médico Referenciador San José</label>
+          <select id="newMedicoSanJose" name="medicoSanJose">
+            <option value="">Seleccionar médico San José</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid form-grid-2">
+        <div class="form-group">
+          <label for="newOcupacion">Ocupación</label>
+          <input type="text" id="newOcupacion" name="ocupacion" placeholder="Ej: Ingeniero" data-charset="letters">
+        </div>
+        <div class="form-group">
+          <label for="newCurp">CURP</label>
+          <input type="text" id="newCurp" name="curp" placeholder="Ej: ROMA570701HNLXXX01" maxlength="18" style="text-transform: uppercase;" data-charset="alnum">
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Block: Información de Contacto -->
+    <section class="patient-create-section content-card">
+      <div class="section-header">
+        <div class="section-icon-bullet">2</div>
+        <h2>Información de contacto</h2>
+      </div>
+      <div class="form-grid form-grid-3">
+        <div class="form-group">
+          <label for="newEmail">Correo electrónico <span class="required-star">*</span></label>
+          <input type="email" id="newEmail" name="email" placeholder="Ej: correo@dominio.com" required>
+        </div>
+        <div class="form-group">
+          <label for="newTelefono">Teléfono</label>
+          <input type="tel" id="newTelefono" name="telefono" placeholder="Ej: 5512345678" inputmode="numeric" title="Ingresa hasta 15 dígitos" data-charset="numbers" maxlength="15">
+        </div>
+        <div class="form-group">
+          <label for="newCelular">Celular <span class="required-star">*</span></label>
+          <input type="tel" id="newCelular" name="celular" placeholder="Ej: 5512345678" inputmode="numeric" title="Ingresa hasta 15 dígitos" data-charset="numbers" maxlength="15" required>
+        </div>
+      </div>
+    </section>
+
+    <!-- Block: Configuración del Paciente -->
+    <section class="patient-create-section content-card">
+      <div class="section-header">
+        <div class="section-icon-bullet">3</div>
+        <h2>Configuración del paciente</h2>
+      </div>
+      <div class="form-grid form-grid-2">
+        <div class="form-group">
+          <label for="newListaPrecios">Seguros (Lista de precios) <span class="required-star">*</span></label>
+          <select id="newListaPrecios" name="listaPrecios">
+            <option value="">Seleccionar seguro</option>
+            <option value="Precio Regular">Particular</option>
+            <option value="AIG Seguros México">AIG Seguros México</option>
+            <option value="AXA Seguros">AXA Seguros</option>
+            <option value="Allianz">Allianz</option>
+            <option value="BUPA México">BUPA México</option>
+            <option value="BX+">BX+</option>
+            <option value="GNP Seguros">GNP Seguros</option>
+            <option value="General de Seguros">General de Seguros</option>
+            <option value="HSBC Seguros">HSBC Seguros</option>
+            <option value="ISSSTE">ISSSTE</option>
+            <option value="MetLife Más">MetLife Más</option>
+            <option value="Metlife México">Metlife México</option>
+            <option value="Plan Seguro">Plan Seguro</option>
+            <option value="Prevem Seguros">Prevem Seguros</option>
+            <option value="Protocolo">Protocolo</option>
+            <option value="Seguros Atlas">Seguros Atlas</option>
+            <option value="Seguros BBVA Bancomer">Seguros BBVA Bancomer</option>
+            <option value="Seguros Banorte">Seguros Banorte</option>
+            <option value="Seguros Inbursa">Seguros Inbursa</option>
+            <option value="Seguros Mapfre">Seguros Mapfre</option>
+            <option value="Seguros Monterrey">Seguros Monterrey</option>
+            <option value="Seguros Sura">Seguros Sura</option>
+            <option value="Vitamedica">Vitamedica</option>
+            <option value="Zurich">Zurich</option>
+            <option value="Predeterminado">Predeterminado</option>
+            <option value="TD">TD</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="newEstadoCivil">Estado civil</label>
+          <select id="newEstadoCivil" name="estadoCivil">
+            <option value="">Seleccionar estado civil</option>
+            <option value="Casado">Casado</option>
+            <option value="Soltero">Soltero</option>
+            <option value="Divorciado">Divorciado</option>
+            <option value="Viudo">Viudo</option>
+            <option value="Unión Libre">Unión Libre</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Block: Información de Citas -->
+    <section class="patient-create-section content-card">
+      <div class="section-header">
+        <div class="section-icon-bullet">4</div>
+        <h2>Información de citas</h2>
+      </div>
+      <div class="form-grid form-grid-2">
+        <div class="form-group">
+          <label for="newCitaCon">Cita con</label>
+          <select id="newCitaCon" name="citaCon">
+            <!-- Opciones reales pobladas desde /clivora/api/doctor_specialties
+                 (catálogo de especialidades, ver populateEspecialidadSelectOptions
+                 en app.js) — antes era una lista fija en este HTML, sin relación
+                 real con la especialidad de cada doctor. -->
+            <option value="">Seleccionar especialidad</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="newDoctor">Doctor <span class="required-star">*</span></label>
+          <select id="newDoctor" name="doctor" disabled>
+            <option value="">Seleccionar doctor</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Block: Domicilio Personal -->
+    <section class="patient-create-section content-card">
+      <div class="section-header">
+        <div class="section-icon-bullet">5</div>
+        <h2>Domicilio personal</h2>
+      </div>
+      <div class="form-grid form-grid-3">
+        <div class="form-group">
+          <label for="newPais">País</label>
+          <input type="text" id="newPais" name="pais" placeholder="Ej: México" data-charset="letters">
+        </div>
+        <div class="form-group">
+          <label for="newEstado">Estado</label>
+          <input type="text" id="newEstado" name="estado" placeholder="Ej: Jalisco" data-charset="letters">
+        </div>
+        <div class="form-group">
+          <label for="newCiudad">Ciudad</label>
+          <input type="text" id="newCiudad" name="ciudad" placeholder="Ej: Guadalajara" data-charset="letters">
+        </div>
+      </div>
+      <div class="form-grid form-grid-3">
+        <div class="form-group">
+          <label for="newColonia">Colonia</label>
+          <input type="text" id="newColonia" name="colonia" placeholder="Ej: Americana" data-charset="alnum">
+        </div>
+        <div class="form-group">
+          <label for="newCodigoPostal">Código Postal</label>
+          <input type="text" id="newCodigoPostal" name="codigoPostal" placeholder="Ej: 44100" inputmode="numeric" maxlength="5" data-charset="numbers">
+        </div>
+        <div class="form-group">
+          <label for="newCalle">Calle</label>
+          <input type="text" id="newCalle" name="calle" placeholder="Ej: Av. Vallarta" data-charset="alnum">
+        </div>
+      </div>
+      <div class="form-grid form-grid-2">
+        <div class="form-group">
+          <label for="newNumeroCasa">Número de casa</label>
+          <input type="text" id="newNumeroCasa" name="numeroCasa" placeholder="Ej: 115" data-charset="alnum">
+        </div>
+      </div>
+    </section>
+
+    <!-- Block: Información Fiscal -->
+    <section class="patient-create-section content-card">
+      <div class="section-header">
+        <div class="section-icon-bullet">6</div>
+        <h2>Información fiscal</h2>
+      </div>
+      <div class="form-grid form-grid-2">
+        <div class="form-group">
+          <label for="newRFC">RFC</label>
+          <input type="text" id="newRFC" name="rfc" placeholder="Ej: XAXX010101000" maxlength="13" data-charset="alnum">
+        </div>
+        <div class="form-group">
+          <label for="newRegimenFiscal">Régimen Fiscal</label>
+          <select id="newRegimenFiscal" name="regimenFiscal">
+            <option value="">Seleccionar régimen</option>
+            <option value="General de Ley Personas Morales">General de Ley Personas Morales</option>
+            <option value="Personas Morales con Fines no Lucrativos">Personas Morales con Fines no Lucrativos</option>
+            <option value="Sueldos y Salarios e Ingresos Asimilados a Salarios">Sueldos y Salarios e Ingresos Asimilados
+              a Salarios</option>
+            <option value="Arrendamiento">Arrendamiento</option>
+            <option value="Demás ingresos">Demás ingresos</option>
+            <option value="Consolidación">Consolidación</option>
+            <option value="Residentes en el Extranjero sin Establecimiento Permanente en México">Residentes en el
+              Extranjero sin Establecimiento Permanente en México</option>
+            <option value="Ingresos por Dividendos (socios y accionistas)">Ingresos por Dividendos (socios y
+              accionistas)</option>
+            <option value="Personas Físicas con Actividades Empresariales y Profesionales">Personas Físicas con
+              Actividades Empresariales y Profesionales</option>
+            <option value="Ingresos por intereses">Ingresos por intereses</option>
+            <option value="Sin obligaciones fiscales">Sin obligaciones fiscales</option>
+            <option value="Sociedades Cooperativas de Producción que optan por diferir sus ingresos">Sociedades
+              Cooperativas de Producción que optan por diferir sus ingresos</option>
+            <option value="Incorporación Fiscal">Incorporación Fiscal</option>
+            <option value="Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras">Actividades Agrícolas, Ganaderas,
+              Silvícolas y Pesqueras</option>
+            <option value="Opcional para Grupos de Sociedades">Opcional para Grupos de Sociedades</option>
+            <option value="Coordinados">Coordinados</option>
+            <option value="Hidrocarburos">Hidrocarburos</option>
+            <option value="Régimen de Enajenación o Adquisición de Bienes">Régimen de Enajenación o Adquisición de
+              Bienes</option>
+            <option value="De los Regímenes Fiscales Preferentes y de las Empresas Multinacionales">De los Regímenes
+              Fiscales Preferentes y de las Empresas Multinacionales</option>
+            <option value="Enajenación de acciones en bolsa de valores">Enajenación de acciones en bolsa de valores
+            </option>
+            <option value="Régimen de los ingresos por obtención de premios">Régimen de los ingresos por obtención de
+              premios</option>
+            <option value="Régimen de las actividades empresariales con ingresos a traves de plataformas inalambricas">
+              Régimen de las actividades empresariales con ingresos a traves de plataformas inalambricas</option>
+            <option value="Régimen Simplificado de confianza">Régimen Simplificado de confianza</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Block: Términos y Condiciones -->
+    <section class="patient-create-section content-card">
+      <div class="section-header">
+        <div class="section-icon-bullet">7</div>
+        <h2>Términos y condiciones</h2>
+      </div>
+      <div class="terms-group">
+        <label class="terms-checkbox-container" for="newTerminosCondiciones">
+          <input type="checkbox" id="newTerminosCondiciones" name="terminosCondiciones">
+          <span class="checkbox-box"></span>
+          <span class="terms-text">
+            ACEPTO LOS TÉRMINOS &amp; CONDICIONES JUNTO A LA POLÍTICA DE PRIVACIDAD DE LOS DATOS.
+          </span>
+        </label>
+      </div>
+    </section>
+  </form>
+
+  <!-- MODAL DE GUARDADO EXITOSO DE PACIENTE -->
+  <div class="modal-overlay" id="patientCreatedModalOverlay">
+    <div class="modal-success-card">
+      <div class="success-checkmark-wrapper">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: #ECFDF5; border: 2px solid #10B981; color: #10B981; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.22);">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+
+        <div>
+          <h3 style="font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0 0 6px 0; letter-spacing: -0.3px;">¡Paciente Guardado!</h3>
+          <p style="font-size: 13px; color: var(--text-muted); margin: 0; font-weight: 500; line-height: 1.4;">El expediente del paciente fue registrado correctamente en el sistema.</p>
+        </div>
+
+        <!-- Tarjeta Resumen del Paciente -->
+        <div style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 14px; text-align: left; box-sizing: border-box;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 10px;">
+              <div id="successPatientName" style="font-weight: 700; font-size: 13px; color: var(--text-main); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">Nombre del Paciente</div>
+              <div id="successPatientSub" style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Doctor registrado</div>
+            </div>
+            <div style="background: rgba(37, 99, 235, 0.12); color: var(--primary-blue); font-weight: 800; font-size: 12px; padding: 4px 10px; border-radius: 6px; flex-shrink: 0;" id="successPatientExp">
+              #00000
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+          <button type="button" class="btn-primary btn-anim-lift" id="btnAddAnotherPatient" style="width: 100%; padding: 11px 16px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: var(--radius-md); background: var(--primary-blue); color: #FFFFFF; cursor: pointer; border: none; box-shadow: 0 4px 12px rgba(47, 76, 138, 0.25);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Seguir agregando un nuevo paciente
+          </button>
+
+          <button type="button" class="btn-secondary btn-anim-lift" id="btnViewCurrentPatient" style="width: 100%; padding: 11px 16px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); cursor: pointer; transition: all 0.2s;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            Ver al paciente actual
+          </button>
+
+          <button type="button" class="btn-secondary btn-anim-lift" id="btnGoToPatientsList" style="width: 100%; padding: 11px 16px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); cursor: pointer; transition: all 0.2s;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"/>
+              <polyline points="12 19 5 12 12 5"/>
+            </svg>
+            Volver al listado de pacientes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

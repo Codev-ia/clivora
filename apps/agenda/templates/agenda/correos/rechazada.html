@@ -1,0 +1,10 @@
+{% extends "agenda/correos/base.html" %}
+{% block cuerpo %}
+  <p>Lamentamos informarte que tu solicitud de cita <strong style="color: #ef4444;">no pudo ser confirmada</strong>.</p>
+  <table cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 12px 0;">
+    <tr><td style="font-weight: 700;">Fecha solicitada:</td><td>{{ inicio|date:"l j \d\e F \d\e Y" }}</td></tr>
+    <tr><td style="font-weight: 700;">Tipo:</td><td>{{ cita.get_tipo_display }}</td></tr>
+    {% if cita.motivo_rechazo %}<tr><td style="font-weight: 700;">Motivo:</td><td>{{ cita.motivo_rechazo.name }}</td></tr>{% endif %}
+  </table>
+  <p>Por favor contáctanos para agendar en otro horario o resolver cualquier duda.</p>
+{% endblock %}

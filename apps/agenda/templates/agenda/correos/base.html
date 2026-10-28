@@ -1,0 +1,5 @@
+<div style="font-family: Arial, sans-serif; font-size: 14px; color: #1f2937;">
+  <p>Hola {{ paciente }},</p>
+  {% block cuerpo %}{% endblock %}
+  <p style="color: #64748b; font-size: 12px; margin-top: 24px;">{{ cita.clinica.name }}{% if cita.clinica.phone %} · {{ cita.clinica.phone }}{% endif %}</p>
+</div>

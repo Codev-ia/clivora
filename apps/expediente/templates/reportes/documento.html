@@ -1,0 +1,115 @@
+<!doctype html>
+{% comment %}Formato común de los reportes PDF (ver apps/expediente/reportes.py): hoja Carta, encabezado con
+   el logo y los datos de la clínica en cada hoja, título y folio, secciones y firma; el pie lleva
+   el paginado. Colores de la identidad de Clivora (clivora-theme.css).{% endcomment %}
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>{{ titulo }} {{ folio }}</title>
+<style>
+  @font-face { font-family: 'Urbanist'; font-weight: 400; src: url('{{ fuentes }}/Urbanist-Regular.ttf'); }
+  @font-face { font-family: 'Urbanist'; font-weight: 500; src: url('{{ fuentes }}/Urbanist-Medium.ttf'); }
+  @font-face { font-family: 'Urbanist'; font-weight: 600; src: url('{{ fuentes }}/Urbanist-SemiBold.ttf'); }
+  @font-face { font-family: 'Urbanist'; font-weight: 700; src: url('{{ fuentes }}/Urbanist-Bold.ttf'); }
+
+  @page {
+    size: Letter;
+    margin: 34mm 16mm 18mm 16mm;
+    @top-center { content: element(encabezado); width: 100%; }
+    @bottom-left { content: 'Generado el {{ generado }}'; font: 400 8.5pt 'Urbanist', sans-serif; color: #6B7180; }
+    @bottom-right { content: 'Página ' counter(page) ' de ' counter(pages); font: 500 8.5pt 'Urbanist', sans-serif; color: #5B616E; }
+  }
+
+  body { font-family: 'Urbanist', 'DejaVu Sans', sans-serif; font-size: 10pt; color: #121418; margin: 0; }
+
+  .encabezado { position: running(encabezado); display: flex; align-items: center; justify-content: space-between;
+                border-bottom: 2px solid #2F4C8A; padding-bottom: 8px; }
+  .encabezado img { max-height: 54px; max-width: 200px; }
+  .encabezado .marca { font-size: 17pt; font-weight: 700; color: #2F4C8A; }
+  .clinica { text-align: right; font-size: 8.5pt; line-height: 1.4; color: #5B616E; }
+  .clinica strong { display: block; font-size: 10.5pt; font-weight: 700; color: #1C2F57; }
+
+  .titulo { display: flex; justify-content: space-between; align-items: flex-end; margin: 2px 0 10px 0; }
+  .titulo h1 { font-size: 19pt; font-weight: 700; color: #1C2F57; margin: 0; }
+  .titulo .folio { font-size: 10pt; color: #5B616E; }
+  .titulo .folio strong { font-size: 13pt; color: #121418; }
+
+  .seccion { margin-bottom: 10px; }
+  .seccion.corta { break-inside: avoid; }
+  .seccion h2 { font-size: 10.5pt; font-weight: 700; color: #1C2F57; background: #E3EAF6; border-left: 4px solid #2F4C8A;
+                border-radius: 3px; padding: 5px 10px; margin: 0 0 6px 0; break-after: avoid; }
+
+  table { width: 100%; border-collapse: collapse; }
+  table.campos { table-layout: fixed; }
+  table.campos td { border: 1px solid #DDE1E8; padding: 4px 8px 5px 8px; vertical-align: top; }
+  table.campos tr, table.datos tr { break-inside: avoid; }
+  .etiqueta { font-size: 8pt; color: #6B7180; }
+  .valor { font-size: 10pt; font-weight: 600; overflow-wrap: anywhere; }
+  .normal .valor { font-weight: 400; }
+  table.datos th { background: #F5F6F8; border: 1px solid #DDE1E8; padding: 5px 7px; font-size: 8.5pt;
+                   font-weight: 700; text-align: left; color: #5B616E; }
+  table.datos td { border: 1px solid #DDE1E8; padding: 5px 7px; font-size: 9.5pt; vertical-align: top; overflow-wrap: anywhere; }
+  table.datos td.grupo { background: #F5F6F8; font-weight: 700; color: #1C2F57; }
+  .texto { padding: 0 4px; line-height: 1.45; overflow-wrap: anywhere; }
+  .pre { white-space: pre-line; }
+  .valor p, .texto p, td p { margin: 0 0 3px 0; }
+  /* El texto del editor puede traer tamaño, color y fuente propios: en el reporte
+     todo se ve igual (se conservan negritas, cursivas y listas). */
+  .valor *, .texto *, td * { font-size: inherit !important; color: inherit !important;
+                             font-family: inherit !important; background: transparent !important; }
+
+  .firma { margin-top: 26px; break-inside: avoid; display: flex; justify-content: center; }
+  .firma > div { width: 46%; text-align: center; }
+  .firma .linea { height: 44px; border-bottom: 1.5px solid #121418; margin-bottom: 5px; }
+  .firma .leyenda { font-size: 8.5pt; color: #6B7180; }
+  .firma .nombre { font-size: 10.5pt; font-weight: 700; }
+</style>
+</head>
+<body>
+  <div class="encabezado">
+    <div>{% if clinica.logo %}<img src="{{ clinica.logo }}" alt="{{ clinica.name }}">{% else %}<span class="marca">{{ clinica.name }}</span>{% endif %}</div>
+    <div class="clinica">
+      {% if clinica.logo %}<strong>{{ clinica.name }}</strong>{% endif %}
+      {% for linea in clinica.lines %}{{ linea }}<br>{% endfor %}
+    </div>
+  </div>
+
+  <div class="titulo">
+    <h1>{{ titulo }}</h1>
+    <div class="folio">Folio <strong>{{ folio }}</strong></div>
+  </div>
+
+  {% for s in secciones %}
+    <div class="seccion{% if s.kind != 'text' and s.rows|length <= 6 or s.kind == 'text' and s.html|length < 400 %} corta{% endif %}">
+      {% if s.title %}<h2>{{ s.title }}</h2>{% endif %}
+      {% if s.kind == 'fields' %}
+        <table class="campos{% if s.normal %} normal{% endif %}">
+          {% for row in s.rows %}
+            <tr>{% for c in row %}<td colspan="{{ c.span }}"><div class="etiqueta">{{ c.label }}</div><div class="valor">{{ c.value }}</div></td>{% endfor %}</tr>
+          {% endfor %}
+        </table>
+      {% elif s.kind == 'table' %}
+        <table class="datos">
+          <thead><tr>{% for h, ancho in s.headers %}<th{% if ancho %} style="width: {{ ancho }}"{% endif %}>{{ h }}</th>{% endfor %}</tr></thead>
+          <tbody>
+          {% for row in s.rows %}
+            {% if row.group %}<tr><td class="grupo" colspan="{{ s.headers|length }}">{{ row.group }}</td></tr>
+            {% else %}<tr>{% for v in row %}<td>{{ v }}</td>{% endfor %}</tr>{% endif %}
+          {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <div class="texto{% if s.pre %} pre{% endif %}">{{ s.html }}</div>
+      {% endif %}
+    </div>
+  {% endfor %}
+
+  <div class="firma">
+    <div>
+      <div class="linea"></div>
+      <div class="leyenda">{{ firma.caption }}</div>
+      <div class="nombre">{{ firma.name }}</div>
+    </div>
+  </div>
+</body>
+</html>

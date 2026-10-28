@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agendar una cita - Clivora</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/clivora/static/assets/css/styles.css">
+  <link rel="stylesheet" href="/clivora/static/assets/css/clivora-theme.css">
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .public-booking-page {
+      max-width: 720px;
+      width: 100%;
+    }
+
+    .public-booking-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .public-booking-header img {
+      height: 36px;
+      width: auto;
+    }
+
+    .public-booking-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 0;
+    }
+
+    .public-booking-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 4px 0 0;
+    }
+
+    .public-booking-section {
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .public-booking-section h2 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0 0 16px;
+    }
+
+    #pbErrorBox {
+      display: none;
+      background: var(--accent-red-bg);
+      color: var(--accent-red);
+      border: 1px solid var(--accent-red);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    #pbSuccessOverlay {
+      display: none;
+      text-align: center;
+      padding: 60px 24px;
+    }
+
+    #pbSuccessOverlay svg {
+      color: var(--accent-green);
+      margin-bottom: 12px;
+    }
+
+    #pbSuccessOverlay h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 0 0 8px;
+    }
+
+    #pbSuccessOverlay p {
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 420px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="public-booking-page">
+    <div class="public-booking-header">
+      <img src="/clivora/static/assets/img/clivora-logo.svg" alt="Clivora">
+      <div>
+        <h1 class="public-booking-title">Agendar una cita</h1>
+        <p class="public-booking-subtitle">Solicita tu cita en línea — nuestro equipo la confirmará por correo.</p>
+      </div>
+    </div>
+
+    <div id="pbErrorBox"></div>
+
+    <div id="pbFormWrapper">
+      <form id="publicBookingForm">
+        <!-- Honeypot anti-bot: oculto para una persona real, un bot que
+             autocompleta todos los campos sí lo llena. -->
+        <div style="position: absolute; left: -9999px; top: -9999px;" aria-hidden="true">
+          <label for="pbWebsite">No llenar este campo</label>
+          <input type="text" id="pbWebsite" name="website" tabindex="-1" autocomplete="off">
+        </div>
+        <div class="public-booking-section content-card">
+          <h2>¿Ya eres paciente?</h2>
+          <div class="form-grid form-grid-2">
+            <div class="form-group">
+              <label for="pbNombre">Nombre completo <span class="required-star">*</span></label>
+              <input type="text" id="pbNombre" name="nombre" placeholder="Ej: María López García" required>
+            </div>
+            <div class="form-group">
+              <label for="pbTelefono">Teléfono de contacto</label>
+              <input type="tel" id="pbTelefono" name="telefono" placeholder="Ej: 8711234567" inputmode="numeric">
+            </div>
+            <div class="form-group">
+              <label for="pbExpediente">Número de expediente (si ya eres paciente)</label>
+              <input type="text" id="pbExpediente" name="expediente" placeholder="Ej: 00042">
+            </div>
+            <div class="form-group">
+              <label for="pbRfc">RFC (si ya eres paciente)</label>
+              <input type="text" id="pbRfc" name="rfc" placeholder="Ej: LOGM800101ABC">
+            </div>
+          </div>
+        </div>
+
+        <div class="public-booking-section content-card">
+          <h2>Detalles de la cita</h2>
+          <div class="form-grid form-grid-2">
+            <div class="form-group">
+              <label for="pbTipo">Tipo de cita <span class="required-star">*</span></label>
+              <select id="pbTipo" required>
+                <option value="Consulta">Consulta</option>
+                <option value="Tratamiento">Tratamiento</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="pbMotivo">Motivo de cita <span class="required-star">*</span></label>
+              <select id="pbMotivo" required></select>
+            </div>
+            <div class="form-group">
+              <label for="pbDoctor">Doctor(a) <span class="required-star">*</span></label>
+              <select id="pbDoctor" required>
+                <option value="">Seleccionar doctor...</option>
+              </select>
+            </div>
+            <div class="form-group"></div>
+            <div class="form-group">
+              <label for="pbFecha">Fecha <span class="required-star">*</span></label>
+              <input type="date" id="pbFecha" required>
+              <small id="pbFechaError"
+                style="color: #ef4444; font-size: 11px; display: none; font-weight: 600;"></small>
+            </div>
+            <div class="form-group">
+              <label for="pbHora">Hora <span class="required-star">*</span></label>
+              <input type="time" id="pbHora" required>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 20px;">
+            <label for="pbNota">Nota (opcional)</label>
+            <textarea id="pbNota" rows="3" placeholder="Observaciones adicionales..."
+              style="width: 100%; font-size: 13px; padding: 10px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); resize: vertical;"></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" id="pbSubmitBtn" style="width: 100%; padding: 14px; font-size: 14px;">Solicitar cita</button>
+      </form>
+    </div>
+
+    <div id="pbSuccessOverlay">
+      <svg width="56" height="56" viewBox="0 0 52 52" fill="none">
+        <circle cx="26" cy="26" r="24" stroke="currentColor" stroke-width="2"/>
+        <path d="M14.1 27.2l7.1 7.2 16.7-16.8" stroke="currentColor" stroke-width="2.5" fill="none"/>
+      </svg>
+      <h2>Solicitud enviada</h2>
+      <p>Recibimos tu solicitud de cita. Nuestro equipo la revisará y te confirmaremos por correo en cuanto sea aprobada.</p>
+      <p id="pbTrackingLink" style="font-size: 13px; margin-top: 16px;"></p>
+    </div>
+  </div>
+
+  <script src="/clivora/static/assets/js/public_booking.js"></script>
+</body>
+
+</html>

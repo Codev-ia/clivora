@@ -1,0 +1,613 @@
+/* =========================================================================
+   Identidad visual de Clivora (Codevia).
+
+   Fondo gris frío, tarjetas blancas muy redondeadas sin sombra, azul marino
+   para la acción principal y azul plateado como acento; cifras grandes y
+   ligeras (Urbanist). Se carga después de styles.css e inventario.css: solo
+   redefine variables y la forma de los componentes compartidos, el resto de
+   la maquetación queda igual.
+   ========================================================================= */
+
+:root {
+  --bg-main: #ECEDEF;
+  --bg-card: #FFFFFF;
+  --bg-sidebar: #FFFFFF;
+  --bg-inner: #F5F6F8;
+  --text-main: #121418;
+  --text-muted: #5B616E;
+  --text-subtle: #6B7180;
+  --border-color: #DDE1E8;
+
+  --primary-blue: #2F4C8A;
+  --primary-blue-light: #E3EAF6;
+  --primary-blue-hover: #1C2F57;
+  --accent-silver: #9DB6E3;
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-card: 28px;
+
+  --shadow-subtle: none;
+  --shadow-card: none;
+}
+
+[data-theme="dark"] {
+  --bg-main: #0E1524;
+  --bg-card: #172036;
+  --bg-sidebar: #172036;
+  --bg-inner: #1E2942;
+  --text-main: #F1F4F9;
+  --text-muted: #AAB3C5;
+  --text-subtle: #8D97AB;
+  --border-color: #2A3652;
+
+  --primary-blue: #7896D0;
+  --primary-blue-light: rgba(120, 150, 208, 0.16);
+  --primary-blue-hover: #9DB6E3;
+}
+
+/* ---------- Base ---------- */
+body,
+[data-theme="dark"] body {
+  background: var(--bg-main);
+}
+.particles-bg { display: none !important; }
+
+/* ---------- Menú lateral ---------- */
+.sidebar,
+[data-theme="dark"] .sidebar {
+  background-color: var(--bg-sidebar);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  border-radius: var(--radius-card);
+  box-shadow: none;
+}
+.logo-container { gap: 12px; }
+.logo-text-title { color: var(--text-main); font-weight: 700; font-size: 20px; letter-spacing: -0.02em; }
+.logo-text-sub { color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.08em; }
+.sidebar.collapsed .logo-text { display: none; }
+.nav-section-title { color: var(--text-subtle); }
+.nav-item { color: var(--text-muted); border-radius: 999px; border: 1px solid transparent; }
+.nav-item:hover,
+[data-theme="dark"] .nav-item:hover { background-color: var(--primary-blue-light); color: var(--primary-blue); }
+.nav-item.active,
+[data-theme="dark"] .nav-item.active {
+  background-color: var(--primary-blue);
+  color: #FFFFFF;
+  border-color: var(--primary-blue);
+  box-shadow: none;
+  font-weight: 600;
+}
+[data-theme="dark"] .nav-item.active { color: #0E1524; }
+.toggle-sidebar-btn, .mobile-close-sidebar-btn, .grid-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  box-shadow: none;
+}
+.user-profile-card { background-color: var(--bg-inner); border: none; border-radius: 999px; }
+.avatar-badge { background-color: var(--primary-blue); color: #FFFFFF; }
+
+/* ---------- Encabezado de cada vista ---------- */
+.welcome-title { font-weight: 300; letter-spacing: -0.02em; color: var(--text-main); }
+.welcome-title strong, .welcome-title b, .welcome-title span { font-weight: 600; }
+.header-pill, .header-profile-avatar {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  box-shadow: none;
+}
+
+/* ---------- Tarjetas ---------- */
+.content-card, .metric-card, .search-filter-card, .ax-card,
+.expediente-editor-card, .patient-create-section, .nopat-card {
+  background-color: var(--bg-card);
+  border: none;
+  border-radius: var(--radius-card);
+  box-shadow: none;
+}
+.card-header { border-bottom: none; padding: 20px 24px 8px; }
+.card-title-group { font-size: 16px; font-weight: 600; }
+.metric-card:hover { transform: none; }
+.metric-card-filter.metric-card-active { box-shadow: inset 0 0 0 2px var(--primary-blue); }
+.metric-icon-box { border-radius: 50%; }
+.metric-value { font-size: 36px; font-weight: 300; letter-spacing: -0.03em; }
+.metric-label { color: var(--text-muted); }
+.metric-pill { font-weight: 600; }
+.activity-stat-box, .timeline-item { border-color: var(--border-color); }
+.activity-stat-box { background-color: var(--bg-inner); border: none; border-radius: 20px; }
+
+/* ---------- Botones ---------- */
+.btn-primary {
+  background-color: var(--primary-blue);
+  color: #FFFFFF;
+  border-radius: 999px;
+  min-height: 44px;
+  padding: 10px 22px;
+  font-weight: 600;
+}
+.btn-primary:hover { background-color: var(--primary-blue-hover); }
+[data-theme="dark"] .btn-primary { color: #0E1524; }
+.btn-secondary {
+  background-color: var(--bg-card);
+  border: 1px solid var(--primary-blue);
+  color: var(--primary-blue);
+  border-radius: 999px;
+  min-height: 44px;
+  padding: 8px 20px;
+}
+.btn-secondary:hover { background-color: var(--primary-blue-light); }
+.btn-hc-action, .btn-action-pill, .agenda-nav-btn, .view-toggle-btn, .mode-pill-btn { border-radius: 999px; }
+
+/* ---------- Pestañas ---------- */
+.tab-pills { background-color: var(--bg-main); border-radius: 999px; }
+.tab-btn { border-radius: 999px; text-transform: none; font-size: 13px; font-weight: 600; }
+.tab-btn.active { background-color: var(--primary-blue); color: #FFFFFF; box-shadow: none; }
+.expediente-subtab { border-radius: 999px; border-bottom: none; text-transform: none; font-size: 13px; letter-spacing: 0; }
+.expediente-subtab.active { background-color: var(--primary-blue); color: #FFFFFF; border-bottom: none; }
+
+/* ---------- Campos ---------- */
+.form-group input:not([type="checkbox"]):not([type="radio"]),
+.form-group select, .form-group textarea,
+.modal-field input, .modal-field select, .modal-field textarea,
+.search-input-wrapper input {
+  border-radius: var(--radius-md);
+  border-color: var(--border-color);
+  background-color: var(--bg-inner);
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus,
+.modal-field input:focus, .modal-field select:focus, .modal-field textarea:focus,
+.search-input-wrapper input:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 4px var(--primary-blue-light);
+}
+.search-input-wrapper input { border-radius: 999px; }
+
+/* ---------- Ventanas modales ---------- */
+.modal-card, .modal-content {
+  background-color: var(--bg-card);
+  border: none;
+  border-radius: var(--radius-card);
+}
+
+/* ---------- Inicio de sesión ---------- */
+.login-card { border-radius: var(--radius-card); box-shadow: none; border: none; }
+.login-brand { color: var(--text-main); font-weight: 300; letter-spacing: -0.02em; }
+.login-brand-sub { color: var(--text-muted); letter-spacing: 0.08em; }
+
+/* Pantallas de acceso (login, restablecer contraseña): fondo gris, tarjeta
+   blanca y, en el login, panel azul marino a la izquierda. */
+body.login-page { background: var(--bg-main); }
+.login-overlay { background: var(--bg-main); padding: 24px; box-sizing: border-box; }
+.login-particles { display: none; }
+.login-overlay.has-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+.login-hero {
+  background: var(--primary-blue);
+  border-radius: 32px;
+  padding: 40px;
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+  overflow: hidden;
+}
+.login-hero-brand { display: flex; align-items: center; gap: 12px; }
+.login-hero-brand img { width: 44px; height: 44px; border-radius: 14px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3); }
+.login-hero-brand span { display: flex; flex-direction: column; font-size: 18px; font-weight: 600; line-height: 1.1; }
+.login-hero-brand small { font-size: 13px; font-weight: 400; color: #C9D3E6; }
+.login-hero-chart { width: 100%; height: auto; }
+.login-hero h2 { margin: 0; font-size: 44px; line-height: 1.1; font-weight: 300; letter-spacing: -0.02em; }
+.login-hero h2 strong { font-weight: 600; }
+.login-hero p { margin: 14px 0 0; font-size: 15px; color: #C9D3E6; }
+.login-card {
+  background: #FFFFFF;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  border-radius: 32px;
+  box-shadow: none;
+}
+.login-overlay.has-hero .login-card {
+  width: auto;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px max(40px, calc((100% - 380px) / 2));
+}
+.login-logo-icon img { border-radius: 18px; }
+.login-overlay.has-hero .login-logo-icon { display: none; }
+.login-overlay.has-hero .login-logo { text-align: left; margin-bottom: 28px; }
+.login-brand { color: var(--text-main); font-size: 32px; }
+.login-brand-sub { color: var(--text-muted); font-size: 12px; letter-spacing: 0.08em; }
+.login-field label { color: var(--text-muted); }
+.login-field label svg { color: var(--primary-blue); }
+.login-field input {
+  background: var(--bg-inner);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  color: var(--text-main);
+  height: 52px;
+}
+.login-field input::placeholder { color: #8D93A0; }
+.login-field input:focus {
+  border-color: var(--primary-blue);
+  background: #FFFFFF;
+  box-shadow: 0 0 0 4px var(--primary-blue-light);
+}
+.login-error { color: #9F1D22; background: #FDE7E8; border-color: #F4C7C9; }
+.login-submit {
+  background: var(--primary-blue);
+  border-radius: 999px;
+  height: 52px;
+  font-weight: 600;
+}
+.login-submit:hover { background: var(--primary-blue-hover); box-shadow: none; }
+.login-forgot-link { color: var(--primary-blue); }
+.login-forgot-link:hover { color: var(--primary-blue-hover); }
+.login-footer-text { color: var(--text-muted); }
+.reset-heading h2, .reset-result h2 { color: var(--text-main); }
+.reset-heading p, .reset-result p { color: var(--text-muted); }
+.login-success-overlay { background: radial-gradient(ellipse at center, #3C5DA3 0%, #2F4C8A 45%, #1C2F57 100%); }
+.success-bar-fill { background: linear-gradient(90deg, #9DB6E3, #FFFFFF, #9DB6E3); }
+@media (max-width: 900px) {
+  .login-overlay.has-hero { grid-template-columns: minmax(0, 1fr); overflow-y: auto; }
+  .login-hero { display: none; }
+  .login-overlay.has-hero .login-logo-icon { display: block; margin: 0 0 16px; }
+}
+
+/* =========================================================================
+   Estructura: barra superior + menú en pastillas (clivora-shell.js).
+   El menú lateral sigue en la página (decide permisos y vista activa), pero
+   no se muestra.
+   ========================================================================= */
+.sidebar, .mobile-hamburger, .sidebar-overlay { display: none !important; }
+body { display: block; }
+.main-wrapper,
+.main-wrapper.sidebar-collapsed {
+  margin: 0 auto !important;
+  width: 100%;
+  max-width: 1440px;
+  padding: 24px 24px 48px !important;
+  box-sizing: border-box;
+}
+
+.cv-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.cv-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--text-main);
+  flex-shrink: 0;
+}
+.cv-brand img { width: 44px; height: 44px; border-radius: 14px; }
+.cv-brand-text { display: flex; flex-direction: column; font-size: 18px; font-weight: 700; line-height: 1.05; letter-spacing: -0.01em; }
+.cv-brand-text small { font-size: 12px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.02em; }
+.cv-topbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; margin-left: 0; }
+.cv-topbar .header-pill { height: 44px; padding: 0 16px; box-sizing: border-box; }
+
+.cv-user-chip,
+.header-profile-avatar.cv-user-chip {
+  width: auto;
+  height: 44px;
+  padding: 0 14px 0 4px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+.header-profile-avatar.cv-user-chip:hover { transform: none; background: var(--bg-card); border-color: var(--primary-blue); }
+.cv-user-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--primary-blue); color: #FFFFFF;
+  display: grid; place-items: center; flex-shrink: 0;
+}
+.cv-user-avatar svg { color: #FFFFFF; }
+.cv-user-text { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
+.cv-user-name { font-size: 14px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+.cv-user-role { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+.cv-user-role:empty, .cv-user-name:empty { display: none; }
+
+/* Saludo + menú */
+.dashboard-header { align-items: flex-end; margin-bottom: 28px; row-gap: 16px; }
+.welcome-title { font-size: 40px; line-height: 1.1; }
+.date-subtitle-container { color: var(--text-muted); }
+.cv-nav { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; margin-left: auto; }
+.cv-nav-pill {
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-main);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cv-nav-pill:hover { border-color: var(--primary-blue); color: var(--primary-blue); }
+.cv-nav-pill.active { background: var(--primary-blue); border-color: var(--primary-blue); color: #FFFFFF; }
+[data-theme="dark"] .cv-nav-pill.active { color: #0E1524; }
+.cv-nav-group { position: relative; }
+.cv-nav-group.open .cv-nav-pill svg { transform: rotate(180deg); }
+.cv-nav-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 220px;
+  padding: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(18, 20, 24, 0.12);
+  z-index: 500;
+}
+.cv-nav-group.open .cv-nav-menu { display: flex; flex-direction: column; gap: 2px; }
+.cv-nav-menu-item {
+  text-align: left;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text-main);
+  padding: 10px 14px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+.cv-nav-menu-item:hover { background: var(--primary-blue-light); color: var(--primary-blue); }
+.cv-nav-menu-item.active { background: var(--primary-blue); color: #FFFFFF; }
+
+.cv-round-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 0; background: var(--primary-blue); color: #FFFFFF;
+  display: grid; place-items: center; cursor: pointer; flex-shrink: 0;
+}
+.cv-round-btn:hover { background: var(--primary-blue-hover); }
+
+/* Encabezado de cada vista (Pacientes, Citas, Tratamientos…) */
+.pacientes-title-group h1 { font-size: 32px; font-weight: 300; letter-spacing: -0.02em; color: var(--text-main); }
+.pacientes-title-group span { color: var(--text-muted); letter-spacing: 0.06em; }
+
+/* =========================================================================
+   Inicio: "Citas de hoy" (indicadores + últimos 7 días) y estado de citas.
+   ========================================================================= */
+.cv-dash-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 2.3fr) minmax(0, 1fr);
+  gap: 16px;
+}
+.cv-hero-body {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  gap: 28px;
+  padding: 8px 24px 24px;
+  align-items: start;
+}
+.cv-hero-card .metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+.cv-hero-card .metric-card {
+  background: var(--bg-inner);
+  border-radius: 20px;
+  padding: 14px 16px;
+  flex-direction: column;
+  gap: 6px;
+}
+.cv-hero-card .metric-card:first-child { grid-column: 1 / -1; background: transparent; padding: 0 0 8px; }
+.cv-hero-card .metric-card:first-child .metric-value { font-size: 64px; line-height: 1; }
+.cv-hero-card .metric-card:first-child.metric-card-active { box-shadow: none; }
+.cv-hero-card .metric-card:first-child.metric-card-active .metric-label { color: var(--primary-blue); font-weight: 600; }
+.cv-hero-card .metric-icon-box { display: none; }
+.cv-hero-card .metric-value { font-size: 28px; }
+.cv-hero-card .metric-label, .cv-hero-card .metric-pill { white-space: normal; }
+.cv-hero-chart { margin: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.cv-hero-chart figcaption {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 13px; color: var(--text-muted);
+}
+.cv-dash-hero > .content-card .card-body { padding-top: 8px; }
+#dashboardView .agenda-card-new { margin-top: 0; }
+#dashboardView > .sub-dashboard > section[style*="margin-top"] { margin-top: 16px !important; }
+
+/* =========================================================================
+   Pacientes: tarjetas y lista con los datos que existen (expediente,
+   nombre, correo, médico asignado y fecha de alta).
+   ========================================================================= */
+.patient-cards-grid { gap: 16px; }
+.patient-card {
+  background: var(--bg-card);
+  border: 1px solid transparent;
+  border-radius: var(--radius-card);
+  box-shadow: none;
+}
+.patient-card:hover { transform: none; border-color: var(--primary-blue); }
+.patient-card-header { padding: 18px 20px 0; }
+.patient-id {
+  font-size: 12px; font-weight: 600; color: var(--primary-blue);
+  border: 1px solid var(--primary-blue); border-radius: 8px; padding: 3px 8px;
+}
+.patient-card-body { padding: 16px 20px 8px; gap: 12px; }
+.patient-avatar { background: var(--primary-blue); color: #FFFFFF; }
+.patient-name-group { display: flex; flex-direction: column; gap: 4px; min-width: 0; align-items: center; }
+.patient-name { font-size: 15px; font-weight: 600; color: var(--text-main); }
+.patient-email { font-size: 12px; color: var(--text-muted); overflow-wrap: anywhere; }
+.patient-card-facts {
+  margin: 0 20px 16px;
+  padding: 12px 14px;
+  background: var(--bg-inner);
+  border-radius: 18px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.patient-card-facts dt { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.patient-card-facts dd { margin: 2px 0 0; font-size: 13px; font-weight: 600; color: var(--text-main); overflow-wrap: anywhere; }
+.patient-card-footer { background: transparent; border-top: 0; padding: 0 20px 20px; }
+.btn-view-patient {
+  width: 100%; min-height: 40px; border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--primary-blue); background: var(--bg-card); color: var(--primary-blue);
+  font-weight: 600;
+}
+.btn-view-patient:hover { background: var(--primary-blue); color: #FFFFFF; }
+
+.patient-cards-grid.list-view { display: flex; flex-direction: column; gap: 8px; }
+.patient-cards-grid.list-view .patient-card {
+  display: grid;
+  grid-template-columns: 80px minmax(220px, 2fr) minmax(160px, 1.4fr) 140px;
+  align-items: center;
+  gap: 16px;
+  border-radius: 22px;
+  padding: 10px 16px;
+}
+.patient-cards-grid.list-view .patient-card-header { padding: 0; }
+.patient-cards-grid.list-view .patient-card-body { flex-direction: row; text-align: left; padding: 0; gap: 12px; }
+.patient-cards-grid.list-view .patient-name-group { align-items: flex-start; }
+.patient-cards-grid.list-view .patient-avatar { width: 40px; height: 40px; font-size: 13px; flex-shrink: 0; }
+.patient-cards-grid.list-view .patient-card-facts { margin: 0; padding: 0; background: transparent; }
+.patient-cards-grid.list-view .patient-card-footer { padding: 0; display: flex; justify-content: flex-end; }
+.patient-cards-grid.list-view .btn-view-patient { width: auto; padding: 0 18px; }
+
+/* =========================================================================
+   Ficha del paciente a dos columnas (clivora-shell.js).
+   ========================================================================= */
+.cv-patient-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.cv-patient-aside { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 16px; }
+.cv-patient-main { min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.cv-patient-aside .patient-sticky-header {
+  position: static;
+  margin: 0;
+  padding: 20px;
+  background: var(--bg-card);
+  border: 0;
+  border-radius: var(--radius-card);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+}
+.cv-patient-aside .patient-back-btn {
+  border-right: 0; padding: 0; margin: 0;
+  align-self: flex-start;
+}
+.cv-patient-aside .patient-back-btn .back-title { font-size: 14px; font-weight: 600; }
+.cv-patient-aside .patient-back-btn .back-subtitle { display: none; }
+.cv-patient-aside .patient-top-card--header { flex-direction: column; align-items: flex-start; gap: 14px; }
+.cv-patient-aside .patient-avatar-large { width: 72px; height: 72px; background: var(--primary-blue-light); }
+.cv-patient-aside .patient-title-group h2 { font-size: 20px; font-weight: 600; line-height: 1.2; }
+.cv-patient-aside .patient-info-pills-row {
+  display: flex; flex-direction: column; gap: 4px;
+  margin: 0; padding: 10px; background: var(--bg-card); border-radius: var(--radius-card);
+}
+.cv-patient-aside .info-pill-box { border: 0; box-shadow: none; padding: 10px; border-radius: 16px; background: transparent; }
+.cv-patient-aside .info-pill-box:hover { background: var(--bg-inner); }
+.cv-patient-aside .info-pill-icon-container { width: 36px; height: 36px; border-radius: 50%; background: var(--primary-blue-light) !important; }
+.cv-patient-aside .info-pill-icon-container svg { stroke: var(--primary-blue); }
+.cv-patient-aside .info-pill-icon-container svg[fill]:not([fill="none"]) { fill: var(--primary-blue); stroke: none; }
+.cv-patient-aside .patient-actions-row { flex-direction: column; gap: 8px; margin: 0; }
+.cv-patient-aside .btn-action-pill { justify-content: center; width: 100%; min-height: 44px; }
+.cv-patient-main .accordion-list { margin: 0; }
+.cv-patient-main .expediente-scroll-section { margin-top: 0; }
+
+/* =========================================================================
+   Pantallas medianas y celular
+   ========================================================================= */
+@media (max-width: 1180px) {
+  .cv-dash-hero { grid-template-columns: minmax(0, 1fr); }
+  .cv-patient-layout { grid-template-columns: minmax(0, 1fr); }
+  .cv-patient-aside { position: static; }
+  .cv-patient-aside .patient-info-pills-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cv-patient-aside .patient-actions-row { flex-direction: row; flex-wrap: wrap; }
+  .cv-patient-aside .btn-action-pill { width: auto; flex: 1 1 200px; }
+}
+@media (max-width: 900px) {
+  .cv-hero-body { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-header { flex-direction: column; align-items: stretch; flex-wrap: nowrap; }
+  .cv-nav { justify-content: flex-start; margin-left: 0; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .cv-nav::-webkit-scrollbar { display: none; }
+  .cv-nav-group { position: static; }
+  .cv-nav-menu { left: 16px; right: 16px; top: auto; margin-top: 8px; position: fixed; }
+  .patient-cards-grid.list-view .patient-card { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .patient-cards-grid.list-view .patient-card-footer { justify-content: stretch; }
+  .patient-cards-grid.list-view .btn-view-patient { width: 100%; }
+}
+@media (max-width: 640px) {
+  .main-wrapper, .main-wrapper.sidebar-collapsed { padding: 16px 16px 40px !important; }
+  .cv-topbar { margin-bottom: 20px; }
+  .cv-brand-text { display: none; }
+  .cv-topbar .time-pill { display: none; }
+  .cv-user-text { display: none; }
+  .cv-user-chip, .header-profile-avatar.cv-user-chip { padding: 0 4px; }
+  .welcome-title { font-size: 30px; }
+  .cv-patient-aside .patient-info-pills-row { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Botón de cámara de la foto del paciente */
+.avatar-camera-btn { background-color: var(--primary-blue); border-color: var(--bg-card); }
+
+/* Verificación en dos pasos: código grande y centrado, casilla "confiar en
+   este equipo" y enlace para usar un código de recuperación. */
+.verify-code-input { text-align: center; font-size: 22px !important; letter-spacing: 6px; font-weight: 700; }
+.verify-remember { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); cursor: pointer; }
+.verify-remember input { width: 16px; height: 16px; accent-color: var(--primary-blue); }
+.verify-toggle { background: none; border: none; cursor: pointer; margin-top: 14px; width: 100%; text-align: center; font: inherit; font-size: 13px; }
+
+/* Mi Perfil → Seguridad (seguridad.js) */
+.profile-security { border-top: 1px solid var(--border-color); padding-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+.profile-security-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; color: var(--primary-blue); text-transform: uppercase; letter-spacing: 0.5px; }
+.profile-security-item { border: 1px solid var(--border-color); border-radius: 14px; padding: 12px 14px; background: var(--bg-inner); }
+.profile-security-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.profile-security-name { font-size: 13px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.profile-security-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
+.profile-security-badge { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: var(--border-color); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+.profile-security-badge.is-on { background: #DCFCE7; color: #166534; }
+.profile-security-panel { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border-color); display: flex; flex-direction: column; gap: 10px; }
+.profile-security-panel[hidden] { display: none; }
+.profile-security-help { font-size: 12px; color: var(--text-muted); line-height: 1.45; margin: 0; }
+.profile-security-steps { font-size: 12px; color: var(--text-main); margin: 0; padding-left: 18px; line-height: 1.5; }
+.profile-security-qr { display: flex; justify-content: center; }
+.profile-security-qr img { width: 180px; height: 180px; background: #fff; border-radius: 12px; padding: 6px; border: 1px solid var(--border-color); }
+.profile-security-secret { font-size: 12px; font-weight: 700; letter-spacing: 1px; word-break: break-all; color: var(--text-main); }
+.profile-security-code { text-align: center; font-size: 20px !important; letter-spacing: 6px; font-weight: 700; }
+.profile-security-codes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.profile-security-codes code { font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); letter-spacing: 1px; }
+.profile-security-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.profile-security-actions-start { justify-content: flex-start; }
+.profile-security-danger { color: #DC2626 !important; border-color: #FCA5A5 !important; }
+.profile-security-msg { font-size: 12px; font-weight: 600; }
+.profile-security-msg:empty { display: none; }
+.profile-security-msg.is-error { color: #DC2626; }
+.profile-security-msg.is-ok, .profile-security-ok { color: #16A34A; font-size: 12px; font-weight: 700; margin: 0; }
+
+/* Configuración → Usuarios: aviso con botón para quitar la verificación en dos pasos. */
+.cfg-usuario-2fa { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: var(--primary-blue-light); font-size: 12px; color: var(--text-main); }
+.cfg-usuario-2fa[hidden] { display: none; }

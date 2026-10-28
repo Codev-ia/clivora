@@ -1,0 +1,13 @@
+{% extends "agenda/correos/base.html" %}
+{% block cuerpo %}
+  <p>Tu cita ha sido <strong style="color: #10b981;">confirmada</strong>. Estos son los detalles:</p>
+  <table cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 12px 0;">
+    <tr><td style="font-weight: 700;">Fecha:</td><td>{{ inicio|date:"l j \d\e F \d\e Y" }}</td></tr>
+    <tr><td style="font-weight: 700;">Hora:</td><td>{{ inicio|date:"H:i" }}</td></tr>
+    <tr><td style="font-weight: 700;">Tipo:</td><td>{{ cita.get_tipo_display }}</td></tr>
+    {% if cita.motivo %}<tr><td style="font-weight: 700;">Motivo:</td><td>{{ cita.motivo.name }}</td></tr>{% endif %}
+    {% if doctor %}<tr><td style="font-weight: 700;">Doctor(a):</td><td>{{ doctor }}</td></tr>{% endif %}
+    {% if cita.lugar %}<tr><td style="font-weight: 700;">Ubicación:</td><td>{{ cita.lugar.name }}{% if cita.sala %} ({{ cita.sala.name }}){% endif %}</td></tr>{% endif %}
+  </table>
+  <p>Te esperamos. Si necesitas reagendar o tienes dudas, contáctanos.</p>
+{% endblock %}
