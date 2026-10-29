@@ -128,13 +128,15 @@ def index(request):
         return redirect(settings.LOGIN_URL)
     return render_app_page('index.html', ['assets/css/styles.css', 'assets/css/inventario.css', 'assets/css/clivora-theme.css',
                                            'assets/js/app.js', 'assets/js/app-ui.js', 'assets/js/inventario.js',
-                                           'assets/js/config.js', 'assets/js/clivora-shell.js', 'assets/js/seguridad.js'])
+                                           'assets/js/config.js', 'assets/js/medicos.js', 'assets/js/clivora-shell.js',
+                                           'assets/js/seguridad.js'])
 
 
 @require_GET
 @login_required
 def api_me(request):
     """Perfil y banderas de permisos que usa app.js."""
+    from apps.accounts.medicos import puede_administrar as medicos_admin, puede_ver_medicos
     from apps.expediente.notas import es_rol_recepcion  # notas importa módulos que importan este
 
     user = request.user
@@ -166,6 +168,10 @@ def api_me(request):
         'canManageClinicas': admin or user.has_perm('core.change_clinica'),
         'canManageLugares': admin or user.has_perm('core.change_lugar'),
         'canManageUsers': admin or user.has_perm('accounts.change_user'),
+        # Médicos: el administrador ve y edita a todos; un médico, solo su ficha.
+        'canSeeMedicos': puede_ver_medicos(user),
+        'canManageMedicos': medicos_admin(user),
+        'canManageEspecialidades': admin or user.has_perm('accounts.change_especialidad'),
         'isSuperuser': user.is_superuser,
         # Límites de la instalación y uso actual (Configuración → Sistema).
         'limites': limits_uso(),

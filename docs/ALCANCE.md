@@ -50,6 +50,8 @@ PostgreSQL) con su propia base de datos, lista para un VPS.
 | Foto del paciente (botón de cámara de la ficha; se reduce a 512 px y solo la ve quien puede ver al paciente) | Hecho |
 | Compartir expediente con un médico (pestaña Compartir, rol "Compartir Expediente"): al médico externo le da acceso al expediente mientras exista el registro | Hecho |
 | Reportes PDF con WeasyPrint (encabezado de la clínica activa, folio, paginado y firma): Historia Clínica, signos vitales, Evaluación Inicial y Registro Clínico de Enfermería, nota de oncología, orden médica, receta médica y oncológica | Hecho |
+| Médicos (reemplaza "Información del Médico"): lista de médicos (rol Médicos o Médico Externo) y enfermería (Enfermería o Jefa de Enfermería) con filtro por tipo; ficha con cédula profesional, universidad, teléfono y firma (imagen), y en los médicos además especialidad, cédula de especialidad y enfermera asignada. El administrador edita a todos; los demás solo su ficha. Los PDF llevan la firma, especialidad y cédulas de quien firma (médico o enfermería) | Hecho |
+| Configuración → Especialidades: catálogo (alta, cambio de nombre, desactivar); filtra al médico en "Cita con" de la agenda y del alta de paciente | Hecho |
 
 ## Pendientes
 
@@ -58,7 +60,6 @@ en JSON y esa parte se ve vacía):
 
 | Módulo | Rutas |
 |---|---|
-| Información del Médico (perfil profesional del usuario) | `me/doctor_info` |
 | Ventas y cotizaciones (fuera de alcance por ahora), incluido el desglose de una receta | `sale_orders`, `sale_order`, `tratamientos/<id>/order`, `recipe_headers/<id>/create_quote`, `files/<id>/create_quote`, `facturacion/summary` |
 
 Otros pendientes:
@@ -66,7 +67,6 @@ Otros pendientes:
 | Pendiente | Nota |
 |---|---|
 | Notas de evolución, esquemas de quimioterapia, cuestionario de ingreso y aseguradoras del paciente | No se replicaron: en el sistema anterior no había ningún registro, no se podían crear notas de evolución y las pestañas Esquemas, Cuestionario y Aseguradoras estaban ocultas. Se agregan si se van a usar. |
-| Cédulas y firma del médico en los PDF | Los reportes llevan el nombre y la línea de firma; las cédulas, la especialidad y la firma digital llegan con "Información del Médico". |
 | Mi Perfil: nombre, puesto y departamento | El botón "Guardar Cambios" solo los cambia en pantalla (ya era así); la contraseña y la verificación en dos pasos sí se guardan desde Seguridad. |
 | Revisar el modo oscuro con la paleta nueva | |
 | Repositorio git y despliegue en el VPS | |

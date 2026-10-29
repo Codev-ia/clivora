@@ -18,6 +18,7 @@
       clinicas: me.canManageClinicas,
       lugares: me.canManageLugares,
       usuarios: me.canManageUsers,
+      especialidades: me.canManageEspecialidades,
       productos: me.canSeeInventory,
       precios: me.canSeeInventory,
       sistema: me.isSuperuser,
@@ -34,6 +35,62 @@
     const active = document.querySelector('.page-view.active-view');
     const viewKey = active && active.id.replace(/View$/, '');
     if (viewKey in show && !show[viewKey] && typeof switchView === 'function') switchView('dashboard');
+  }
+
+  // ── MÓDULOS (botón Configuración) ───────────────────────────────────────
+  // Una tarjeta por opción permitida del menú de Configuración, con su mismo
+  // ícono y nombre; el clic lo atiende clivora-shell.js (data-cv-view).
+  const MODULOS = [
+    ['Organización', {
+      clinicas: 'Datos generales y fiscales, y logo de cada clínica.',
+      lugares: 'Lugares de atención con sus salas de tratamiento y consultorios.',
+    }],
+    ['Personal', {
+      usuarios: 'Cuentas de acceso, roles y clínicas permitidas.',
+      especialidades: 'Catálogo de especialidades que se asignan a los médicos.',
+    }],
+    ['Farmacia y precios', {
+      productos: 'Catálogo de productos, medicamentos y servicios.',
+      precios: 'Listas de precios y aseguradoras.',
+    }],
+    ['Sistema', {
+      sistema: 'Límites de la instalación, servidor de correo y tu cuenta.',
+    }],
+  ];
+
+  function renderModulos() {
+    const wrap = $('cfgModules');
+    if (!wrap) return;
+    const item = (view) => document.querySelector(`#configNavSection .nav-item[data-view="${view}"]`);
+    const grupos = MODULOS.map(([titulo, vistas]) => {
+      const cards = Object.entries(vistas).filter(([view]) => item(view) && !item(view).classList.contains('inv-hidden'))
+        .map(([view, desc]) => {
+          const el = item(view);
+          return `
+          <button type="button" class="cfg-module" data-cv-view="${view}">
+            <span class="cfg-module-icon">${el.querySelector('svg').outerHTML}</span>
+            <span class="cfg-module-text">
+              <span class="cfg-module-name">${esc(el.querySelector('span').textContent.trim())}</span>
+              <span class="cfg-module-desc">${esc(desc)}</span>
+            </span>
+            <svg class="cfg-module-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </button>`;
+        });
+      return cards.length ? `<section class="cfg-module-group"><h2 class="cfg-module-group-title">${esc(titulo)}</h2>
+        <div class="cfg-module-grid">${cards.join('')}</div></section>` : '';
+    }).join('');
+    wrap.innerHTML = grupos || '<div class="cfg-empty">No tienes opciones de configuración disponibles.</div>';
+  }
+
+  // Cada módulo lleva un regreso a la vista de módulos junto a su título.
+  function addBackLinks() {
+    document.querySelectorAll('#configNavSection .nav-item[data-view]').forEach((el) => {
+      const view = el.dataset.view;
+      const title = view !== 'configuracion' && document.querySelector(`#${view}View .pacientes-title-group`);
+      if (!title || title.querySelector('.cfg-back')) return;
+      title.insertAdjacentHTML('afterbegin', `<button type="button" class="cfg-back" data-cv-view="configuracion">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Configuración</button>`);
+    });
   }
 
   // ── límites de la instalación (Configuración → Sistema) ─────────────────
@@ -744,6 +801,8 @@
     me = await loadMe();
     renderClinicaPill();
     applyPermissions();
+    addBackLinks();
+    watchView('configuracionView', renderModulos);
     limites = me.limites || {};
     renderLimits();
     watchView('clinicasView', loadClinicas);

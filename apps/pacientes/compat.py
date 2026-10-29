@@ -12,7 +12,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
-from apps.accounts.models import User
+from apps.accounts.medicos import resumen as resumen_medico
+from apps.accounts.models import Especialidad, User
 from apps.accounts.roles import ROLES
 from apps.web.roles import has_role, is_admin
 from apps.core.clinica import active_clinica
@@ -210,7 +211,9 @@ def patient_detail(request, patient_id):
             'email': p.email, 'celular': p.celular, 'telefono': p.telefono,
             'doctorId': doctor.pk if doctor else False,
             'doctorName': (doctor.get_full_name() or doctor.username) if doctor else '',
-            'doctorSpecialty': '', 'doctorSpecialtyId': False, 'doctorPartnerId': doctor.pk if doctor else False,
+            'doctorSpecialty': resumen_medico(doctor)['especialidad'],
+            'doctorSpecialtyId': resumen_medico(doctor)['especialidad_id'] or False,
+            'doctorPartnerId': doctor.pk if doctor else False,
             'tutorLegal': p.tutor_legal,
         },
         'domicilio_personal': {
@@ -290,20 +293,21 @@ def doctors(request):
     medicos = ROLES['group_medicos']
     externos = ROLES['group_medico_externo']
     users = (User.objects.filter(is_active=True, groups__name__in=[medicos, externos])
-             .prefetch_related('groups').distinct())
+             .prefetch_related('groups').select_related('perfil_medico__especialidad').distinct())
     data = []
     for u in users:
         names = {g.name for g in u.groups.all()}
-        data.append({'id': u.pk, 'name': u.get_full_name() or u.username, 'specialtyId': False,
-                     'specialtyName': '', 'isExternalReferral': externos in names,
-                     'isInternalReferral': medicos in names})
+        perfil = resumen_medico(u)
+        data.append({'id': u.pk, 'name': u.get_full_name() or u.username,
+                     'specialtyId': perfil['especialidad_id'] or False, 'specialtyName': perfil['especialidad'],
+                     'isExternalReferral': externos in names, 'isInternalReferral': medicos in names})
     return _json(sorted(data, key=lambda d: d['name']))
 
 
 @require_GET
 @login_required
 def doctor_specialties(request):
-    return _json([])  # catálogo de especialidades: llega con el módulo de médicos
+    return _json([{'id': e.pk, 'name': e.name} for e in Especialidad.objects.filter(active=True)])
 
 
 @require_GET

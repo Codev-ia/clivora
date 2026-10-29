@@ -63,6 +63,9 @@
   .firma .linea { height: 44px; border-bottom: 1.5px solid #121418; margin-bottom: 5px; }
   .firma .leyenda { font-size: 8.5pt; color: #6B7180; }
   .firma .nombre { font-size: 10.5pt; font-weight: 700; }
+  .firma .linea.con-imagen { height: auto; min-height: 44px; display: flex; align-items: flex-end; justify-content: center; }
+  .firma .linea img { max-height: 64px; max-width: 220px; object-fit: contain; margin-bottom: 2px; }
+  .firma .dato { font-size: 8.5pt; color: #3B4150; }
 </style>
 </head>
 <body>
@@ -106,9 +109,11 @@
 
   <div class="firma">
     <div>
-      <div class="linea"></div>
+      <div class="linea{% if firma.imagen %} con-imagen{% endif %}">{% if firma.imagen %}<img src="{{ firma.imagen }}" alt="Firma">{% endif %}</div>
       <div class="leyenda">{{ firma.caption }}</div>
       <div class="nombre">{{ firma.name }}</div>
+      {% if firma.especialidad %}<div class="dato">{{ firma.especialidad }}</div>{% endif %}
+      {% if firma.cedulas %}<div class="dato">{{ firma.cedulas }}</div>{% endif %}
     </div>
   </div>
 </body>

@@ -104,14 +104,13 @@
             </svg>
             <span>Salas de Quimioterapia</span>
           </a>-->
-          <a href="#" class="nav-item" data-view="medico">
+          <a href="#" class="nav-item app-nav-medicos inv-hidden" data-view="medicos">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-              <line x1="16" y1="13" x2="8" y2="13" />
-              <line x1="16" y1="17" x2="8" y2="17" />
+              <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6 6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3" />
+              <path d="M8 15v1a6 6 0 0 0 6 6 6 6 0 0 0 6-6v-4" />
+              <circle cx="20" cy="10" r="2" />
             </svg>
-            <span>Información del Médico</span>
+            <span>Médicos</span>
           </a>
         </div>
 
@@ -136,6 +135,13 @@
              opción se muestra según los permisos de /api/me (config.js). -->
         <div class="nav-section" id="configNavSection" style="display: none;">
           <div class="nav-section-title">Configuración</div>
+          <a href="#" class="nav-item app-nav-configuracion" data-view="configuracion">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" />
+            </svg>
+            <span>Configuración</span>
+          </a>
           <a href="#" class="nav-item app-nav-clinicas" data-view="clinicas">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" /><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" />
@@ -155,6 +161,13 @@
               <path d="m17 11 2 2 4-4" />
             </svg>
             <span>Usuarios y roles</span>
+          </a>
+          <a href="#" class="nav-item app-nav-especialidades inv-hidden" data-view="especialidades">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M11 2v2" /><path d="M5 2v2" /><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1" />
+              <path d="M8 15a6 6 0 0 0 12 0v-3" /><circle cx="20" cy="10" r="2" />
+            </svg>
+            <span>Especialidades</span>
           </a>
           <a href="#" class="nav-item app-nav-productos" data-view="productos">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -879,74 +892,73 @@
         </div>
       </header>
 
-      <!-- FILTER CARD -->
-      <section class="tratamientos-filter-card">
-        <div class="filter-row top-filter-row">
-          <div class="filter-group" style="flex: 1;">
+      <!-- FILTER CARD
+           Renglón 1: búsqueda, fecha y "Limpiar filtros". Renglón 2: Ubicación,
+           Sala y Doctor a lo ancho. Renglón 3: Estado como chips en el orden del
+           ciclo de la cita (cada uno con su conteo) y Check-in como selector de
+           una sola opción. Lo arma renderTratamientosTable (app.js). -->
+      <section class="tratamientos-filter-card trat-filters">
+        <div class="trat-filters-top">
+          <div class="filter-group trat-filters-search">
             <label>Búsqueda</label>
             <div class="search-input-wrapper">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
-              <input type="text" id="tratamientosSearchInput" class="search-input full-width" placeholder="Buscar por paciente, doctor, validado por o venta...">
+              <input type="text" id="tratamientosSearchInput" class="search-input full-width" placeholder="Buscar por paciente, doctor, motivo o sala...">
             </div>
           </div>
-        </div>
-
-        <div class="filter-row bottom-filter-row">
-          <!-- Ancho fijo y fecha corta (dd/mm/aaaa): antes, al elegir una fecha el
-               texto largo ensanchaba el campo y movía el resto de los filtros. -->
-          <div class="filter-group" style="width: 200px; flex: 0 0 200px;">
+          <!-- Fecha corta (dd/mm/aaaa) y ancho fijo: el texto largo movía los demás filtros. -->
+          <div class="filter-group trat-filters-fecha">
             <label>Fecha</label>
             <input type="date" id="tratamientosFechaInput" class="search-input" data-date-format="short" style="width: 100%;">
           </div>
+          <button type="button" class="trat-clear-btn" id="tratamientosLimpiarFiltros" title="Volver a los filtros iniciales">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+            Limpiar filtros
+          </button>
+        </div>
 
-          <div class="filter-group" style="width: 160px;">
+        <div class="trat-filters-selects">
+          <div class="filter-group">
             <label>Ubicación</label>
-            <select id="tratamientosUbicacionFilter" class="custom-select trat-filter-ubicacion" style="width: 160px;">
+            <select id="tratamientosUbicacionFilter" class="custom-select trat-filter-ubicacion">
               <option value="">Todas las ubicaciones</option>
             </select>
           </div>
-
-          <div class="filter-group" style="width: 160px;">
+          <div class="filter-group">
             <label>Sala</label>
-            <select id="tratamientosSalaFilter" class="custom-select trat-filter-sala" style="width: 160px;">
+            <select id="tratamientosSalaFilter" class="custom-select trat-filter-sala">
               <option value="">Todas las salas</option>
             </select>
           </div>
-
-          <div class="filter-group" style="width: 180px;">
+          <div class="filter-group">
             <label>Doctor</label>
-            <select id="tratamientosDoctorFilter" class="custom-select trat-filter-doctor" style="width: 180px;">
+            <select id="tratamientosDoctorFilter" class="custom-select trat-filter-doctor">
               <option value="">Todos los doctores</option>
             </select>
           </div>
         </div>
 
-        <!-- Estado y Check-in en su propio renglón, siempre debajo de los
-             selectores: antes compartían renglón con ellos y, según el ancho
-             de la pantalla, a veces quedaban abajo y a veces se subían junto
-             a Doctor. -->
-        <div class="filter-row status-filter-row">
-          <div class="filter-group checkboxes-group">
+        <div class="trat-filters-status">
+          <div class="filter-group">
             <label>Estado</label>
-            <div class="checkbox-grid">
-              <label class="custom-checkbox"><input type="checkbox" class="trat-filter-estado" value="nuevo" checked><span></span> Nuevo</label>
-              <label class="custom-checkbox"><input type="checkbox" class="trat-filter-estado" value="aprobado" checked><span></span> Aprobado</label>
-              <label class="custom-checkbox"><input type="checkbox" class="trat-filter-estado" value="rechazado"><span></span> Rechazado</label>
-              <label class="custom-checkbox"><input type="checkbox" class="trat-filter-estado" value="pendiente" checked><span></span> Pendiente</label>
-              <label class="custom-checkbox"><input type="checkbox" class="trat-filter-estado" value="desfasado" checked><span></span> Desfasado</label>
-              <label class="custom-checkbox"><input type="checkbox" class="trat-filter-estado" value="en_progreso" checked><span></span> En proceso</label>
-              <label class="custom-checkbox"><input type="checkbox" class="trat-filter-estado" value="finalizado" checked><span></span> Finalizado</label>
+            <div class="trat-chips">
+              <label class="trat-chip pendiente"><input type="checkbox" class="trat-filter-estado" value="pendiente" checked><span class="trat-chip-dot"></span>Pendiente<span class="trat-chip-count" data-estado-count="pendiente">0</span></label>
+              <label class="trat-chip aprobado"><input type="checkbox" class="trat-filter-estado" value="aprobado" checked><span class="trat-chip-dot"></span>Aprobado<span class="trat-chip-count" data-estado-count="aprobado">0</span></label>
+              <label class="trat-chip en_progreso"><input type="checkbox" class="trat-filter-estado" value="en_progreso" checked><span class="trat-chip-dot"></span>En progreso<span class="trat-chip-count" data-estado-count="en_progreso">0</span></label>
+              <label class="trat-chip finalizado"><input type="checkbox" class="trat-filter-estado" value="finalizado" checked><span class="trat-chip-dot"></span>Finalizado<span class="trat-chip-count" data-estado-count="finalizado">0</span></label>
+              <label class="trat-chip desfasado"><input type="checkbox" class="trat-filter-estado" value="desfasado" checked><span class="trat-chip-dot"></span>Desfasado<span class="trat-chip-count" data-estado-count="desfasado">0</span></label>
+              <label class="trat-chip rechazado"><input type="checkbox" class="trat-filter-estado" value="rechazado"><span class="trat-chip-dot"></span>Rechazado<span class="trat-chip-count" data-estado-count="rechazado">0</span></label>
             </div>
           </div>
-
-          <div class="filter-group checkboxes-group">
+          <div class="filter-group">
             <label>Check-in</label>
-            <div class="checkbox-grid-col">
-              <label class="custom-checkbox"><input type="checkbox" class="trat-filter-checkin" value="con" checked><span></span> Con Check-in</label>
-              <label class="custom-checkbox"><input type="checkbox" class="trat-filter-checkin" value="sin" checked><span></span> Sin Check-in</label>
+            <div class="trat-segmented" role="radiogroup" aria-label="Check-in">
+              <label><input type="radio" name="tratFiltroCheckin" class="trat-filter-checkin" value="" checked><span>Todos</span></label>
+              <label><input type="radio" name="tratFiltroCheckin" class="trat-filter-checkin" value="con"><span>Con check-in</span></label>
+              <label><input type="radio" name="tratFiltroCheckin" class="trat-filter-checkin" value="sin"><span>Sin check-in</span></label>
             </div>
           </div>
         </div>
@@ -1172,8 +1184,10 @@
           <button id="invTabMoves" class="view-toggle-btn">Movimientos</button>
         </div>
       </div>
-      <div class="tratamientos-table-wrapper">
-        <table class="tratamientos-table inv-table" id="invStockTable">
+      <!-- inv-stock-cards: en celular las existencias se ven como tarjetas
+           (inventario.css); la pestaña Movimientos la quita (inventario.js). -->
+      <div class="tratamientos-table-wrapper inv-stock-cards">
+        <table class="tratamientos-table inv-table" id="invStockTable" data-cards="custom">
           <thead>
             <tr>
               <th>CÓDIGO</th>
@@ -1278,6 +1292,20 @@
 
 
     <!-- ================= CONFIGURACIÓN: CLÍNICAS ================= -->
+    <!-- ================= CONFIGURACIÓN: MÓDULOS =================
+         Botón "Configuración" de la barra superior: una tarjeta por cada
+         opción de Configuración que el usuario tiene permitida. Las arma
+         config.js a partir del menú lateral (#configNavSection). -->
+    <div class="page-view" id="configuracionView">
+      <header class="pacientes-header" style="margin-bottom: 24px;">
+        <div class="pacientes-title-group">
+          <h1>Configuración</h1>
+          <span>MÓDULOS</span>
+        </div>
+      </header>
+      <div id="cfgModules"></div>
+    </div>
+
     <div class="page-view" id="clinicasView">
       <header class="pacientes-header" style="margin-bottom: 24px;">
         <div class="pacientes-title-group">
@@ -1484,180 +1512,78 @@
       </div>
     </div>
 
-    <div class="page-view" id="medicoView">
-      <header class="pacientes-header" style="margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
+    <!-- ================= MÉDICOS =================
+         Datos profesionales de médicos (rol Médicos o Médico Externo) y
+         enfermería (Enfermería o Jefa de Enfermería): cédulas y firma; de los
+         médicos, especialidad y enfermera asignada. El administrador ve y
+         edita a todos; los demás solo su ficha. Ver medicos.js. -->
+    <div class="page-view" id="medicosView">
+      <header class="pacientes-header" style="margin-bottom: 24px;">
         <div class="pacientes-title-group">
-          <h1 style="font-size: 24px; font-weight: 800; color: var(--text-main);">Información del Médico</h1>
-          <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">PERFIL PROFESIONAL</span>
+          <h1>Médicos</h1>
+          <span>CLÍNICA</span>
         </div>
-        <button type="button" id="saveDoctorInfoBtn" class="btn-primary btn-anim-lift" disabled style="padding: 10px 24px; font-weight: 700; font-size: 13px; opacity: 0.6; cursor: not-allowed; transition: all 0.2s;">
-          Guardar información
-        </button>
       </header>
-
-      <form id="doctorInfoForm" style="display: flex; flex-direction: column; gap: 24px;">
-
-        <!-- Esta pantalla es compartida entre doctores y enfermeras — cuál
-             de las dos secciones de abajo se muestra depende de a qué grupo
-             pertenece quien inició sesión (rol group_medicos /
-             group_enfermeria, ver canSeeDoctorSection/canSeeNurseSection en
-             initializeDoctorInfoModule, app.js). Ambas arrancan ocultas acá
-             para no mostrar por un instante la sección equivocada mientras
-             carga /api/me/doctor_info. -->
-        <div id="doctorInfoDoctorSection" style="display: none; flex-direction: column; gap: 24px;">
-
-          <!-- BLOQUE 1: DATOS PROFESIONALES -->
-          <div class="card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-sm);">
-            <div style="margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 14px;">
-              <h2 style="font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0 0 4px 0;">Datos profesionales</h2>
-              <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Complete su información profesional para continuar</p>
-            </div>
-
-            <div class="form-grid form-grid-2">
-              <div class="form-group">
-                <label style="font-size: 12px; font-weight: 700; color: var(--text-main); text-transform: uppercase; margin-bottom: 6px; display: block;">Cédula profesional</label>
-                <input type="text" id="docCedulaProf" placeholder="Ej. 12345678" inputmode="numeric" data-charset="numbers" class="search-input full-width" style="width: 100%; height: 40px; font-size: 13px; padding: 8px 14px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-main); color: var(--text-main);">
-              </div>
-
-              <div class="form-group">
-                <label style="font-size: 12px; font-weight: 700; color: var(--text-main); text-transform: uppercase; margin-bottom: 6px; display: block;">Especialidad</label>
-                <select id="docEspecialidad" class="search-input full-width" style="width: 100%; height: 40px; font-size: 13px; padding: 8px 14px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-main); color: var(--text-main);">
-                  <!-- Opciones pobladas desde /clivora/api/doctor_specialties (ver
-                       initializeDoctorInfoModule en app.js). -->
-                  <option value="">Seleccionar especialidad...</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label style="font-size: 12px; font-weight: 700; color: var(--text-main); text-transform: uppercase; margin-bottom: 6px; display: block;">Cédula de especialidad</label>
-                <input type="text" id="docCedulaEsp" placeholder="Ej. 87654321" inputmode="numeric" data-charset="numbers" class="search-input full-width" style="width: 100%; height: 40px; font-size: 13px; padding: 8px 14px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-main); color: var(--text-main);">
-              </div>
-
-              <div class="form-group">
-                <label style="font-size: 12px; font-weight: 700; color: var(--text-main); text-transform: uppercase; margin-bottom: 6px; display: block;">Universidad</label>
-                <input type="text" id="docUniversidad" placeholder="Ej. Universidad Nacional Autónoma de México" data-charset="letters" class="search-input full-width" style="width: 100%; height: 40px; font-size: 13px; padding: 8px 14px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-main); color: var(--text-main);">
-              </div>
+      <p class="cfg-intro" id="medIntro">Datos profesionales de médicos y enfermería: cédulas y firma; de cada médico, además, su especialidad y su enfermera asignada. La firma y las cédulas aparecen en los documentos impresos (recetas, órdenes, notas, historia clínica). Se dan de alta en Configuración → Usuarios y roles con el rol Médicos, Médico Externo, Enfermería o Jefa de Enfermería.</p>
+      <section class="tratamientos-filter-card med-manage">
+        <div class="filter-row top-filter-row">
+          <div class="filter-group" style="flex: 1;">
+            <label>Búsqueda</label>
+            <div class="search-input-wrapper"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+              <input type="text" id="medSearch" class="search-input full-width" placeholder="Buscar por nombre, usuario o cédula...">
             </div>
           </div>
-
-          <!-- BLOQUE 2: FIRMA DIGITAL -->
-          <div class="card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-sm);">
-            <div style="margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 14px;">
-              <h2 style="font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0 0 4px 0;">Firma digital</h2>
-              <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Suba su firma digital para validar documentos</p>
-            </div>
-
-            <div class="form-group">
-              <label style="font-size: 12px; font-weight: 700; color: var(--text-main); text-transform: uppercase; margin-bottom: 10px; display: block;">Firma actual</label>
-
-              <input type="file" id="docFirmaInput" accept="image/*" style="display: none;">
-
-              <div id="docFirmaDropzone" style="border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 24px; text-align: center; background: var(--bg-main); cursor: pointer; transition: all 0.2s;">
-
-                <div id="docFirmaEmptyState" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
-                  <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(37, 99, 235, 0.1); color: var(--primary-blue); display: flex; align-items: center; justify-content: center;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="17 8 12 3 7 8"/>
-                      <line x1="12" y1="3" x2="12" y2="15"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <span style="font-size: 14px; font-weight: 700; color: var(--primary-blue);">Haga clic para adjuntar imagen de firma</span>
-                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">PNG, JPG o SVG (Recomendado fondo transparente)</p>
-                  </div>
-                </div>
-
-                <div id="docFirmaPreviewContainer" style="display: none; flex-direction: column; align-items: center; gap: 14px;">
-                  <img id="docFirmaPreviewImg" src="" alt="Firma Digital" style="max-height: 120px; max-width: 280px; object-fit: contain; border: 1px solid var(--border-color); border-radius: 6px; padding: 8px; background: #ffffff;">
-                  <div style="display: flex; gap: 10px;">
-                    <button type="button" id="changeFirmaBtn" class="btn-secondary btn-anim-lift" style="padding: 6px 14px; font-size: 12px;">Cambiar firma</button>
-                    <button type="button" id="removeFirmaBtn" class="btn-hc-action red-outline btn-anim-lift" style="padding: 6px 14px; font-size: 12px;">Eliminar</button>
-                  </div>
-                </div>
-
-              </div>
-            </div>
+          <div class="filter-group" style="width: 200px;">
+            <label>Tipo</label>
+            <select id="medTipoFilter" class="search-input" style="width: 200px;">
+              <option value="">Médicos y enfermería</option>
+              <option value="medico">Médicos</option>
+              <option value="enfermeria">Enfermería</option>
+            </select>
           </div>
-
-        </div>
-
-        <!-- BLOQUE 3: INFORMACIÓN DE LA ENFERMERA — self-service: cada
-             enfermera edita su propia cédula/firma (el nombre no se pide acá,
-             ya es el nombre de su propio contacto/cuenta). -->
-        <div id="doctorInfoNurseSection" style="display: none; flex-direction: column; gap: 24px;">
-          <div class="card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-sm);">
-            <div style="margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 14px;">
-              <h2 style="font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0 0 4px 0;">Información de la enfermera</h2>
-              <p style="font-size: 13px; color: var(--text-muted); margin: 0;">La firma se usa únicamente en los documentos impresos con notas de enfermería</p>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-              <div class="form-group">
-                <label style="font-size: 12px; font-weight: 700; color: var(--text-main); text-transform: uppercase; margin-bottom: 6px; display: block;">Nombre</label>
-                <div id="nurseNombreDisplay" style="font-size: 13px; font-weight: 700; color: var(--text-main); padding: 8px 0;">—</div>
-              </div>
-
-              <div class="form-group">
-                <label style="font-size: 12px; font-weight: 700; color: var(--text-main); text-transform: uppercase; margin-bottom: 6px; display: block;">Cédula</label>
-                <input type="text" id="nurseCedula" placeholder="Ej. 12345678" inputmode="numeric" data-charset="numbers" class="search-input full-width" style="width: 100%; height: 40px; font-size: 13px; padding: 8px 14px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-main); color: var(--text-main);">
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label style="font-size: 12px; font-weight: 700; color: var(--text-main); text-transform: uppercase; margin-bottom: 10px; display: block;">Firma de la enfermera</label>
-
-              <input type="file" id="nurseFirmaInput" accept="image/*" style="display: none;">
-
-              <div id="nurseFirmaDropzone" style="border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 24px; text-align: center; background: var(--bg-main); cursor: pointer; transition: all 0.2s;">
-
-                <div id="nurseFirmaEmptyState" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
-                  <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(37, 99, 235, 0.1); color: var(--primary-blue); display: flex; align-items: center; justify-content: center;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="17 8 12 3 7 8"/>
-                      <line x1="12" y1="3" x2="12" y2="15"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <span style="font-size: 14px; font-weight: 700; color: var(--primary-blue);">Haga clic para adjuntar imagen de firma</span>
-                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">PNG, JPG o SVG (Recomendado fondo transparente)</p>
-                  </div>
-                </div>
-
-                <div id="nurseFirmaPreviewContainer" style="display: none; flex-direction: column; align-items: center; gap: 14px;">
-                  <img id="nurseFirmaPreviewImg" src="" alt="Firma de la Enfermera" style="max-height: 120px; max-width: 280px; object-fit: contain; border: 1px solid var(--border-color); border-radius: 6px; padding: 8px; background: #ffffff;">
-                  <div style="display: flex; gap: 10px;">
-                    <button type="button" id="changeNurseFirmaBtn" class="btn-secondary btn-anim-lift" style="padding: 6px 14px; font-size: 12px;">Cambiar firma</button>
-                    <button type="button" id="removeNurseFirmaBtn" class="btn-hc-action red-outline btn-anim-lift" style="padding: 6px 14px; font-size: 12px;">Eliminar</button>
-                  </div>
-                </div>
-
-              </div>
-            </div>
+          <div class="filter-group" style="width: 260px;">
+            <label>Especialidad</label>
+            <select id="medEspecialidadFilter" class="search-input" style="width: 260px;"><option value="">Todas</option></select>
           </div>
         </div>
+      </section>
+      <div class="table-controls-row">
+        <div style="font-size: 12px; color: var(--text-muted);">Mostrando <span id="medCount" style="font-weight: 700; color: var(--text-main);">0</span> <span id="medCountLabel">registros</span></div>
+      </div>
+      <div class="tratamientos-table-wrapper">
+        <table class="tratamientos-table inv-table">
+          <thead><tr><th>NOMBRE</th><th>TIPO</th><th>ESPECIALIDAD</th><th>CÉDULA PROFESIONAL</th><th>ENFERMERA / MÉDICOS ASIGNADOS</th><th>FIRMA</th><th></th></tr></thead>
+          <tbody id="medBody"></tbody>
+        </table>
+      </div>
+    </div>
 
+    <!-- ================= CONFIGURACIÓN: ESPECIALIDADES ================= -->
+    <div class="page-view" id="especialidadesView">
+      <header class="pacientes-header" style="margin-bottom: 24px;">
+        <div class="pacientes-title-group">
+          <h1>Especialidades</h1>
+          <span>CONFIGURACIÓN</span>
+        </div>
+      </header>
+      <p class="cfg-intro">Catálogo de especialidades médicas. Se asignan a cada médico en la pantalla Médicos y filtran al médico en "Cita con" al agendar. No se borran: una especialidad desactivada deja de ofrecerse, pero los médicos que ya la tienen la conservan.</p>
+      <form id="espForm" class="cfg-panel esp-add-form" style="margin-bottom: 20px;">
+        <div class="inv-grid inv-grid-4">
+          <div class="modal-field inv-span-3"><label>Nueva especialidad</label><input type="text" name="name" class="search-input" maxlength="120" placeholder="Oncología médica"></div>
+          <div class="modal-field" style="justify-content: flex-end;">
+            <button type="submit" class="btn-hc-action blue-filled btn-anim-lift" id="espAddBtn" style="width: auto; height: 44px; padding: 0 18px; font-size: 13px;">+ Agregar</button>
+          </div>
+        </div>
       </form>
-
-      <!-- MODAL DE GUARDADO EXITOSO DE INFORMACIÓN DEL MÉDICO -->
-      <div class="modal-overlay" id="doctorInfoSuccessOverlay">
-        <div class="modal-success-card">
-          <div class="success-checkmark-wrapper">
-            <div style="width: 60px; height: 60px; border-radius: 50%; background: #ECFDF5; border: 2px solid #10B981; color: #10B981; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.22);">
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-            </div>
-            <div>
-              <h3 style="font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0 0 6px 0; letter-spacing: -0.3px;">¡Información Guardada!</h3>
-              <p style="font-size: 13px; color: var(--text-muted); margin: 0; font-weight: 500; line-height: 1.4;">Tus datos profesionales y firma digital se guardaron correctamente.</p>
-            </div>
-            <button type="button" class="btn-primary btn-anim-lift" id="btnCloseDoctorInfoSuccess" style="width: 100%; padding: 11px 16px; font-size: 13px; font-weight: 700; border-radius: var(--radius-md); background: var(--primary-blue); color: #FFFFFF; cursor: pointer; border: none; box-shadow: 0 4px 12px rgba(47, 76, 138, 0.25);">
-              Entendido
-            </button>
-          </div>
-        </div>
+      <div class="table-controls-row">
+        <div style="font-size: 12px; color: var(--text-muted);">Mostrando <span id="espCount" style="font-weight: 700; color: var(--text-main);">0</span> especialidades</div>
+        <label class="custom-checkbox" style="font-size: 12px;"><input type="checkbox" id="espInactive"><span></span> Incluir desactivadas</label>
+      </div>
+      <div class="tratamientos-table-wrapper">
+        <table class="tratamientos-table inv-table">
+          <thead><tr><th>NOMBRE</th><th class="inv-num">MÉDICOS</th><th>ESTADO</th><th></th></tr></thead>
+          <tbody id="espBody"></tbody>
+        </table>
       </div>
     </div>
 
@@ -3041,7 +2967,7 @@
                 </div>
               </div>
             </form>
-            <table class="tratamientos-table inv-table inv-table-compact cfg-salas-table">
+            <table class="tratamientos-table inv-table inv-table-compact cfg-salas-table" data-cards="custom">
               <thead><tr><th>NOMBRE</th><th>TIPO</th><th>ESTADO</th><th></th></tr></thead>
               <tbody id="cfgSalasBody"></tbody>
             </table>
@@ -3100,6 +3026,58 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn-primary modal-header-btn-standard btn-anim-lift cfg-manage-usuarios" id="cfgUsuarioSaveBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-overlay" id="medModal">
+      <div class="modal-content" style="max-width: 820px; max-height: 92vh; display: flex; flex-direction: column;">
+        <div class="modal-header" style="flex-shrink: 0; background: var(--bg-main);">
+          <div>
+            <h2 style="color: var(--primary-blue);" id="medModalTitle">Médico</h2>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 2px 0 0 0;" id="medModalSubtitle"></p>
+          </div>
+          <button type="button" class="btn-secondary modal-header-btn-standard btn-anim-lift" data-inv-close="medModal"
+            style="color: #4B5563; border-color: #D1D5DB; background: #F9FAFB;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            Cerrar
+          </button>
+        </div>
+        <div class="modal-body" style="flex: 1; overflow-y: auto; gap: 14px;">
+          <form id="medForm" class="inv-form" autocomplete="off">
+<div class="ax-card">
+<div class="ax-card-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary-blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6 6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6 6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>Datos profesionales</div>
+            <div class="inv-grid">
+              <div class="modal-field med-solo-medico"><label>Especialidad <button type="button" class="med-link" id="medEspecialidadesLink" hidden>Administrar</button></label><select name="especialidad" class="search-input"></select></div>
+              <div class="modal-field"><label>Universidad</label><input type="text" name="universidad" class="search-input" maxlength="200" placeholder="Universidad Autónoma de Nuevo León"></div>
+              <div class="modal-field"><label>Cédula profesional</label><input type="text" name="cedula_profesional" class="search-input" maxlength="20" inputmode="numeric" pattern="\d*" placeholder="12345678"></div>
+              <div class="modal-field med-solo-medico"><label>Cédula de especialidad</label><input type="text" name="cedula_especialidad" class="search-input" maxlength="20" inputmode="numeric" pattern="\d*" placeholder="87654321"></div>
+              <div class="modal-field"><label>Teléfono de contacto</label><input type="text" name="telefono" class="search-input" maxlength="40"></div>
+              <div class="modal-field med-solo-medico"><label>Enfermera asignada</label><select name="enfermera" class="search-input"></select></div>
+              <div class="modal-field med-solo-enfermeria inv-span-2"><label>Médicos que la tienen asignada</label><div class="med-asignados" id="medAsignados">—</div></div>
+            </div>
+            <p class="ax-card-help" style="margin-top: 10px;">El nombre y el correo se cambian en Configuración → Usuarios y roles.</p>
+</div>
+<div class="ax-card">
+<div class="ax-card-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary-blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Firma</div>
+            <div class="cfg-logo-row">
+              <div class="cfg-logo-box med-firma-box" id="medFirmaPreview"><span>Sin firma</span></div>
+              <div class="cfg-logo-actions">
+                <div class="cfg-help">Imagen de la firma (PNG, JPG o WebP, máximo 2 MB; mejor con fondo blanco o transparente). Se imprime sobre la línea de firma de sus documentos.</div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;" class="med-editable">
+                  <label class="btn-secondary modal-header-btn-standard btn-anim-lift cfg-logo-upload">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Subir firma
+                    <input type="file" id="medFirmaInput" accept="image/png,image/jpeg,image/webp" hidden>
+                  </label>
+                  <button type="button" class="btn-secondary modal-header-btn-standard btn-anim-lift" id="medFirmaRemove" style="color: #DC2626; border-color: #FCA5A5;">Quitar</button>
+                </div>
+              </div>
+            </div>
+</div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-primary modal-header-btn-standard btn-anim-lift med-editable" id="medSaveBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar</button>
         </div>
       </div>
     </div>
@@ -3253,6 +3231,7 @@
     <script src="/clivora/static/assets/js/app-ui.js"></script>
     <script src="/clivora/static/assets/js/inventario.js"></script>
     <script src="/clivora/static/assets/js/config.js"></script>
+    <script src="/clivora/static/assets/js/medicos.js"></script>
     <script src="/clivora/static/assets/js/clivora-shell.js"></script>
     <script src="/clivora/static/assets/js/seguridad.js"></script>
 </body>

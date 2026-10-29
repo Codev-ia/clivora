@@ -16,13 +16,17 @@
     { view: 'agenda', label: 'Agenda' },
     { view: 'tratamientos', label: 'Tratamientos' },
     { view: 'inventario', label: 'Farmacia' },
-    // Oculto por ahora (la vista sigue existiendo): quitar "hidden" para mostrarlo.
-    { view: 'medico', label: 'Información del Médico', hidden: true },
-    { label: 'Configuración', items: ['clinicas', 'lugares', 'usuarios', 'productos', 'precios', 'sistema'] },
+    { view: 'medicos', label: 'Médicos' },
+    // Botón que abre la vista de módulos (config.js); cada módulo es una vista.
+    { view: 'configuracion', label: 'Configuración' },
   ];
   // Vistas a las que se llega desde otra (no tienen pastilla propia) y la
   // pastilla que debe verse activa mientras están abiertas.
-  const PARENT_VIEW = { pacienteDetail: 'pacientes', nuevoPaciente: 'pacientes' };
+  const CONFIG_VIEWS = ['clinicas', 'lugares', 'usuarios', 'especialidades', 'productos', 'precios', 'sistema'];
+  const PARENT_VIEW = {
+    pacienteDetail: 'pacientes', nuevoPaciente: 'pacientes',
+    ...Object.fromEntries(CONFIG_VIEWS.map((v) => [v, 'configuracion'])),
+  };
 
   const sidebar = () => document.getElementById('sidebar');
   const sidebarItem = (view) => sidebar()?.querySelector(`.nav-item[data-view="${view}"]`);
@@ -38,7 +42,7 @@
 
   function activeView() {
     const activeItem = sidebar()?.querySelector('.nav-item.active');
-    if (activeItem) return activeItem.dataset.view;
+    if (activeItem) return PARENT_VIEW[activeItem.dataset.view] || activeItem.dataset.view;
     const activePage = document.querySelector('.page-view.active-view');
     const id = activePage ? activePage.id.replace(/View$/, '') : '';
     return PARENT_VIEW[id] || id;

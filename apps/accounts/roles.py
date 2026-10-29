@@ -35,7 +35,7 @@ DESCRIPTIONS = {
     'Compartir Expediente': 'Puede compartir el expediente de un paciente.',
     'Desglose de Documentos': 'Revisa y desglosa los documentos del expediente.',
     'Historial Médico: Editar Fecha de Creación': 'Puede corregir la fecha de un registro del historial.',
-    'Administrador': 'Configuración completa: clínicas, lugares, usuarios, productos y precios.',
+    'Administrador': 'Configuración completa: clínicas, lugares, usuarios, médicos, especialidades, productos y precios.',
 }
 
 _INV_VIEW = [
@@ -60,6 +60,8 @@ _CONFIG = _INV_MANAGE + _PRICING_MANAGE + [
     'core.view_lugar', 'core.add_lugar', 'core.change_lugar', 'core.delete_lugar',
     'core.view_sala', 'core.add_sala', 'core.change_sala', 'core.delete_sala',
     'accounts.view_user', 'accounts.add_user', 'accounts.change_user',
+    'accounts.view_perfilmedico', 'accounts.change_perfilmedico',
+    'accounts.view_especialidad', 'accounts.add_especialidad', 'accounts.change_especialidad',
 ]
 
 # Farmacia (inventario) y Configuración → Productos / Listas de precios solo

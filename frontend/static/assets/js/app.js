@@ -10815,6 +10815,34 @@ function printHistoriaClinica() {
   });
 
 
+  // --- AGENDAR CITA DESDE LA FICHA DEL PACIENTE ---
+  // Mismo modal que "Agendar Cita" de la Agenda, con el paciente y su
+  // médico asignado ya cargados (la especialidad sale del médico).
+  document.addEventListener('click', async (event) => {
+    const btn = event.target.closest('#agendarCitaPacienteBtn');
+    if (!btn || typeof window.openCitaModal !== 'function') return;
+    const patientId = window.clivoraCurrentPatientId;
+    if (!patientId) return;
+    btn.disabled = true;
+    try {
+      const response = await fetch(`/clivora/api/patients/${patientId}`, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const patient = await response.json();
+      const info = patient.info_general || {};
+      window.openCitaModal({
+        pacienteId: patient.id,
+        paciente: patient.name,
+        doctorId: info.doctorId || null,
+        especialidadId: info.doctorSpecialtyId || null,
+      });
+    } catch (error) {
+      console.error('Error al cargar el paciente para agendar la cita:', error);
+      showClivoraAlertModal('No se pudieron cargar los datos del paciente para agendar la cita.');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
   // --- FICHA DE INGRESO MODAL LOGIC ---
   document.addEventListener('click', async (event) => {
     const btnFicha = event.target.closest('#fichaIngresoBtn');
@@ -14321,9 +14349,9 @@ function buildEventPillEl(cita, onBeforeOpen) {
 }
 
 // Tope de columnas lado a lado antes de agrupar en tarjeta de resumen (ver
-// buildTimedEventLayout): 1 = en cuanto 2 o más citas se empalman en la misma
-// hora se agrupan, en Semana y en Día.
-const CALENDAR_STACK_MAX_COLS = { semana: 1, dia: 1 };
+// buildTimedEventLayout): 2 = hasta 2 citas empalmadas se ven lado a lado;
+// a partir de 3 en la misma hora se agrupan, en Semana y en Día.
+const CALENDAR_STACK_MAX_COLS = { semana: 2, dia: 2 };
 
 function formatMinutesAmPm(totalMin) {
   const h24 = Math.floor(totalMin / 60) % 24;
@@ -15503,7 +15531,7 @@ async function loadCurrentUserProfile() {
     headerWelcomeTitle.textContent = firstName ? `Bienvenido, ${firstName}` : 'Bienvenido';
   }
 
-  // Sección "Clínica" del sidebar (Tratamientos + Información del Médico):
+  // Sección "Clínica" del sidebar (Tratamientos + Médicos):
   // solo para Médicos/Enfermería (ver canSeeClinicMenu en /api/me). Un
   // administrador siempre la ve porque base.group_system implica ambos
   // grupos.
@@ -15518,6 +15546,7 @@ async function loadCurrentUserProfile() {
   if (data.isDoctorReadOnly) {
     const openAddCitaModalBtn = document.getElementById('openAddCitaModal');
     if (openAddCitaModalBtn) openAddCitaModalBtn.style.display = 'none';
+    hide('agendarCitaPacienteBtn');
     const openAddTratamientoBtn = document.getElementById('openAddTratamiento');
     if (openAddTratamientoBtn) openAddTratamientoBtn.style.display = 'none';
 
@@ -16173,301 +16202,7 @@ function imprimirFichaIngreso() {
   }, 300);
 }
 
-// ============================================================
-// INFORMACIÓN DEL MÉDICO — Gestión de Datos Profesionales & Firma Digital
-// ============================================================
-function initializeDoctorInfoModule() {
-  const saveBtn = document.getElementById('saveDoctorInfoBtn');
-  const form = document.getElementById('doctorInfoForm');
-  if (!saveBtn || !form) return;
-
-  const cedulaProfInput = document.getElementById('docCedulaProf');
-  const especialidadInput = document.getElementById('docEspecialidad');
-  const cedulaEspInput = document.getElementById('docCedulaEsp');
-  const universidadInput = document.getElementById('docUniversidad');
-
-  const firmaInput = document.getElementById('docFirmaInput');
-  const dropzone = document.getElementById('docFirmaDropzone');
-  const emptyState = document.getElementById('docFirmaEmptyState');
-  const previewContainer = document.getElementById('docFirmaPreviewContainer');
-  const previewImg = document.getElementById('docFirmaPreviewImg');
-  const changeFirmaBtn = document.getElementById('changeFirmaBtn');
-  const removeFirmaBtn = document.getElementById('removeFirmaBtn');
-
-  // Esta pantalla es compartida entre doctores y enfermeras — qué sección
-  // se muestra depende de canSeeDoctorSection/canSeeNurseSection (ver
-  // applySectionVisibility), calculados en el backend a partir de los
-  // roles group_medicos/group_enfermeria del usuario.
-  const doctorSection = document.getElementById('doctorInfoDoctorSection');
-  const nurseSection = document.getElementById('doctorInfoNurseSection');
-
-  const nurseNombreDisplay = document.getElementById('nurseNombreDisplay');
-  const nurseCedulaInput = document.getElementById('nurseCedula');
-
-  const nurseFirmaInput = document.getElementById('nurseFirmaInput');
-  const nurseDropzone = document.getElementById('nurseFirmaDropzone');
-  const nurseEmptyState = document.getElementById('nurseFirmaEmptyState');
-  const nursePreviewContainer = document.getElementById('nurseFirmaPreviewContainer');
-  const nursePreviewImg = document.getElementById('nurseFirmaPreviewImg');
-  const changeNurseFirmaBtn = document.getElementById('changeNurseFirmaBtn');
-  const removeNurseFirmaBtn = document.getElementById('removeNurseFirmaBtn');
-
-  let currentFirmaDataUrl = '';
-  let currentNurseFirmaDataUrl = '';
-  let initialData = {
-    cedulaProf: '',
-    especialidad: '',
-    cedulaEsp: '',
-    universidad: '',
-    firma: '',
-    nurseCedula: '',
-    nurseFirma: ''
-  };
-
-  function setSaveButtonState(enabled) {
-    if (enabled) {
-      saveBtn.disabled = false;
-      saveBtn.style.opacity = '1';
-      saveBtn.style.cursor = 'pointer';
-    } else {
-      saveBtn.disabled = true;
-      saveBtn.style.opacity = '0.6';
-      saveBtn.style.cursor = 'not-allowed';
-    }
-  }
-
-  function checkFormChanges() {
-    const current = {
-      cedulaProf: (cedulaProfInput?.value || '').trim(),
-      especialidad: (especialidadInput?.value || '').trim(),
-      cedulaEsp: (cedulaEspInput?.value || '').trim(),
-      universidad: (universidadInput?.value || '').trim(),
-      firma: currentFirmaDataUrl,
-      nurseCedula: (nurseCedulaInput?.value || '').trim(),
-      nurseFirma: currentNurseFirmaDataUrl
-    };
-
-    const hasChanged = current.cedulaProf !== initialData.cedulaProf ||
-                       current.especialidad !== initialData.especialidad ||
-                       current.cedulaEsp !== initialData.cedulaEsp ||
-                       current.universidad !== initialData.universidad ||
-                       current.firma !== initialData.firma ||
-                       current.nurseCedula !== initialData.nurseCedula ||
-                       current.nurseFirma !== initialData.nurseFirma;
-
-    setSaveButtonState(hasChanged);
-  }
-
-  function showFirmaPreview(src) {
-    currentFirmaDataUrl = src || '';
-    if (currentFirmaDataUrl) {
-      if (previewImg) previewImg.src = currentFirmaDataUrl;
-      if (previewContainer) previewContainer.style.display = 'flex';
-      if (emptyState) emptyState.style.display = 'none';
-    } else {
-      if (previewImg) previewImg.src = '';
-      if (previewContainer) previewContainer.style.display = 'none';
-      if (emptyState) emptyState.style.display = 'flex';
-    }
-  }
-
-  function showNurseFirmaPreview(src) {
-    currentNurseFirmaDataUrl = src || '';
-    if (currentNurseFirmaDataUrl) {
-      if (nursePreviewImg) nursePreviewImg.src = currentNurseFirmaDataUrl;
-      if (nursePreviewContainer) nursePreviewContainer.style.display = 'flex';
-      if (nurseEmptyState) nurseEmptyState.style.display = 'none';
-    } else {
-      if (nursePreviewImg) nursePreviewImg.src = '';
-      if (nursePreviewContainer) nursePreviewContainer.style.display = 'none';
-      if (nurseEmptyState) nurseEmptyState.style.display = 'flex';
-    }
-  }
-
-  function applySectionVisibility(data) {
-    if (doctorSection) doctorSection.style.display = data.canSeeDoctorSection ? 'flex' : 'none';
-    if (nurseSection) nurseSection.style.display = data.canSeeNurseSection ? 'flex' : 'none';
-    if (nurseNombreDisplay) nurseNombreDisplay.textContent = data.nurseName || '—';
-  }
-
-  async function loadSavedData() {
-    try {
-      if (especialidadInput) await populateEspecialidadSelectOptions(especialidadInput);
-      const response = await fetch('/clivora/api/me/doctor_info', { cache: 'no-store' });
-      const data = response.ok ? await response.json() : {};
-
-      initialData = {
-        cedulaProf: data.professionalLicense || '',
-        especialidad: data.specialtyId ? String(data.specialtyId) : '',
-        cedulaEsp: data.specialtyLicense || '',
-        universidad: data.university || '',
-        firma: data.digitalSignature || '',
-        nurseCedula: data.nurseLicense || '',
-        nurseFirma: data.nurseSignature || ''
-      };
-
-      if (cedulaProfInput) cedulaProfInput.value = initialData.cedulaProf;
-      if (especialidadInput) {
-        especialidadInput.value = initialData.especialidad;
-        // Asignar .value por JS no dispara 'change' nativo, y el <select> está
-        // envuelto por enhanceCustomSelect (su texto visible solo se
-        // actualiza al recibir ese evento) — sin este dispatch el widget se
-        // quedaba mostrando "Seleccionar especialidad" aunque el <select>
-        // real ya tuviera la especialidad guardada.
-        especialidadInput.dispatchEvent(new Event('change', { bubbles: true }));
-      }
-      if (cedulaEspInput) cedulaEspInput.value = initialData.cedulaEsp;
-      if (universidadInput) universidadInput.value = initialData.universidad;
-      if (nurseCedulaInput) nurseCedulaInput.value = initialData.nurseCedula;
-
-      showFirmaPreview(initialData.firma);
-      showNurseFirmaPreview(initialData.nurseFirma);
-      applySectionVisibility(data);
-    } catch (err) {
-      console.error('Error al cargar información del médico', err);
-      showFirmaPreview('');
-      showNurseFirmaPreview('');
-      applySectionVisibility({});
-    }
-    setSaveButtonState(false);
-  }
-
-  [cedulaProfInput, especialidadInput, cedulaEspInput, universidadInput, nurseCedulaInput].forEach(inp => {
-    if (inp) {
-      inp.addEventListener('input', checkFormChanges);
-      // El <select> de Especialidad queda envuelto por enhanceCustomSelect,
-      // que al elegir una opción dispara solo 'change' (no 'input') — sin
-      // este listener, cambiar la especialidad nunca habilitaba "Guardar".
-      inp.addEventListener('change', checkFormChanges);
-    }
-  });
-
-  if (dropzone) {
-    dropzone.addEventListener('click', (e) => {
-      if (e.target === changeFirmaBtn || changeFirmaBtn?.contains(e.target)) {
-        if (firmaInput) firmaInput.click();
-        return;
-      }
-      if (e.target === removeFirmaBtn || removeFirmaBtn?.contains(e.target)) {
-        showFirmaPreview('');
-        if (firmaInput) firmaInput.value = '';
-        checkFormChanges();
-        return;
-      }
-      if (emptyState?.contains(e.target) || e.target === dropzone) {
-        if (firmaInput) firmaInput.click();
-      }
-    });
-  }
-
-  if (firmaInput) {
-    firmaInput.addEventListener('change', (e) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          showFirmaPreview(evt.target?.result || '');
-          checkFormChanges();
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
-
-  if (nurseDropzone) {
-    nurseDropzone.addEventListener('click', (e) => {
-      if (e.target === changeNurseFirmaBtn || changeNurseFirmaBtn?.contains(e.target)) {
-        if (nurseFirmaInput) nurseFirmaInput.click();
-        return;
-      }
-      if (e.target === removeNurseFirmaBtn || removeNurseFirmaBtn?.contains(e.target)) {
-        showNurseFirmaPreview('');
-        if (nurseFirmaInput) nurseFirmaInput.value = '';
-        checkFormChanges();
-        return;
-      }
-      if (nurseEmptyState?.contains(e.target) || e.target === nurseDropzone) {
-        if (nurseFirmaInput) nurseFirmaInput.click();
-      }
-    });
-  }
-
-  if (nurseFirmaInput) {
-    nurseFirmaInput.addEventListener('change', (e) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          showNurseFirmaPreview(evt.target?.result || '');
-          checkFormChanges();
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
-
-  async function handleSave() {
-    const dataToSave = {
-      cedulaProf: (cedulaProfInput?.value || '').trim(),
-      especialidad: (especialidadInput?.value || '').trim(),
-      cedulaEsp: (cedulaEspInput?.value || '').trim(),
-      universidad: (universidadInput?.value || '').trim(),
-      firma: currentFirmaDataUrl,
-      nurseCedula: (nurseCedulaInput?.value || '').trim(),
-      nurseFirma: currentNurseFirmaDataUrl
-    };
-
-    try {
-      const response = await fetch('/clivora/api/me/doctor_info', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          professionalLicense: dataToSave.cedulaProf,
-          specialtyId: dataToSave.especialidad || null,
-          specialtyLicense: dataToSave.cedulaEsp,
-          university: dataToSave.universidad,
-          digitalSignature: dataToSave.firma,
-          nurseLicense: dataToSave.nurseCedula,
-          nurseSignature: dataToSave.nurseFirma,
-        }),
-      });
-      // Antes no se revisaba response.ok: un guardado que fallara en el
-      // servidor (ej. AccessError de un usuario Portal) igual mostraba el
-      // overlay de éxito de abajo, sin ningún indicio de que no se guardó.
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    } catch (err) {
-      console.error('Error al guardar información del médico:', err);
-      showClivoraAlertModal('No se pudo guardar la información del médico.');
-      return;
-    }
-
-    initialData = { ...dataToSave };
-    setSaveButtonState(false);
-
-    const successOverlay = document.getElementById('doctorInfoSuccessOverlay');
-    if (successOverlay) successOverlay.classList.add('open');
-  }
-
-  const closeDoctorInfoSuccessBtn = document.getElementById('btnCloseDoctorInfoSuccess');
-  if (closeDoctorInfoSuccessBtn) {
-    closeDoctorInfoSuccessBtn.addEventListener('click', () => {
-      document.getElementById('doctorInfoSuccessOverlay')?.classList.remove('open');
-    });
-  }
-
-  saveBtn.addEventListener('click', handleSave);
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    if (!saveBtn.disabled) {
-      handleSave();
-    }
-  });
-
-  loadSavedData();
-}
-
 document.addEventListener("DOMContentLoaded", () => {
-  initializeDoctorInfoModule();
   if (typeof updateDashboardMetrics === 'function') {
     updateDashboardMetrics();
   }
@@ -17202,10 +16937,10 @@ function tratEstadoBadgeHtml(estado) {
     rechazado: ['badge-rechazado', 'RECHAZADO'],
     pendiente: ['badge-pendiente', 'PENDIENTE'],
     desfasado: ['badge-desfasado', 'DESFASADO'],
-    en_progreso: ['badge-en_progreso', 'EN PROCESO'],
+    en_progreso: ['badge-en_progreso', 'EN PROGRESO'],
     finalizado: ['badge-finalizado', 'FINALIZADO'],
   };
-  const [cls, label] = map[estado] || map.nuevo;
+  const [cls, label] = map[estado] || map.pendiente;
   return `<span class="badge ${cls}">${label}</span>`;
 }
 
@@ -17227,17 +16962,19 @@ function applyTratVistaMode(mode) {
   if (kanbanView) kanbanView.style.display = mode === 'kanban' ? 'flex' : 'none';
 }
 
-// Las columnas se agrupan por el campo real "estado" de la cita
-// (_ESTADO_TRANSITIONS en clinic_appointment.py: aprobado -> en_progreso
-// vía check-in, en_progreso -> finalizado vía check-out). "nuevo" se funde
-// con "pendiente" (mismo significado: aún sin revisar/aprobar).
+// Las columnas siguen el ciclo de la cita (Cita.TRANSICIONES en
+// apps/agenda/models.py): pendiente -> aprobado -> en_progreso (check-in)
+// -> finalizado (check-out); desfasado y rechazado son desvíos y van al
+// final. "nuevo" se funde con "pendiente" (mismo significado: aún sin
+// aprobar; toda cita de Clivora nace pendiente). Mismo orden y nombres que
+// los chips de Estado del filtro.
 const TRAT_KANBAN_STAGES = [
   { key: 'pendiente', label: 'Pendiente' },
   { key: 'aprobado', label: 'Aprobado' },
-  { key: 'rechazado', label: 'Rechazado' },
-  { key: 'desfasado', label: 'Desfasado' },
-  { key: 'en_progreso', label: 'En proceso' },
+  { key: 'en_progreso', label: 'En progreso' },
   { key: 'finalizado', label: 'Finalizado' },
+  { key: 'desfasado', label: 'Desfasado' },
+  { key: 'rechazado', label: 'Rechazado' },
 ];
 
 function getTratamientoStage(t) {
@@ -17259,11 +16996,13 @@ function renderTratamientosTable() {
   const salaFilter = document.getElementById('tratamientosSalaFilter')?.value || '';
   const doctorFilter = document.getElementById('tratamientosDoctorFilter')?.value || '';
   const estadosOn = Array.from(document.querySelectorAll('.trat-filter-estado:checked')).map(el => el.value);
-  const checkinOn = Array.from(document.querySelectorAll('.trat-filter-checkin:checked')).map(el => el.value);
+  const checkinFilter = document.querySelector('.trat-filter-checkin:checked')?.value || '';
 
-  const filtered = clivoraTratamientos.filter(t => {
+  // Todos los filtros menos Estado: de aquí salen los conteos de cada chip,
+  // para que digan cuántos hay en ese estado con los demás filtros puestos.
+  const sinFiltroEstado = clivoraTratamientos.filter(t => {
     if (searchTerm) {
-      const haystack = [t.paciente, t.doctor, t.validadoPor, t.saleOrderName]
+      const haystack = [t.paciente, t.doctor, t.motivo, t.sala, t.ubicacion, t.validadoPor, t.saleOrderName]
         .filter(Boolean).join(' ').toLowerCase();
       if (!haystack.includes(searchTerm)) return false;
     }
@@ -17271,10 +17010,21 @@ function renderTratamientosTable() {
     if (ubicacionFilter && t.ubicacion !== ubicacionFilter) return false;
     if (salaFilter && t.sala !== salaFilter) return false;
     if (doctorFilter && t.doctor !== doctorFilter) return false;
-    if (estadosOn.length && !estadosOn.includes(t.estado)) return false;
-    if (checkinOn.length && !checkinOn.includes(t.checkIn ? 'con' : 'sin')) return false;
+    if (checkinFilter && checkinFilter !== (t.checkIn ? 'con' : 'sin')) return false;
     return true;
   });
+  const porEstado = {};
+  sinFiltroEstado.forEach(t => {
+    const stage = getTratamientoStage(t);
+    porEstado[stage] = (porEstado[stage] || 0) + 1;
+  });
+  document.querySelectorAll('[data-estado-count]').forEach(el => {
+    el.textContent = String(porEstado[el.dataset.estadoCount] || 0);
+  });
+  // Sin ningún chip marcado no se filtra por estado (se ven todos).
+  const filtered = estadosOn.length
+    ? sinFiltroEstado.filter(t => estadosOn.includes(getTratamientoStage(t)))
+    : sinFiltroEstado;
 
   if (countLabel) countLabel.textContent = String(filtered.length);
 
@@ -17334,7 +17084,7 @@ function renderTratamientosListRows(filtered) {
         <td><div class="td-esquema" data-trat-id="${t.id}">${escapeHtml(t.esquema || '')}</div></td>
         <td>${t.validadoPor || ''}</td>
         <td><div class="status-stack">${badges.join('')}</div></td>
-        <td>${ventaCell}</td>
+        <td class="${t.saleOrderId ? '' : 'trat-sin-venta'}">${ventaCell}</td>
         <td class="td-actions"><div style="display: flex; gap: 8px; justify-content: flex-end;">${actions.join('')}</div></td>
       </tr>
     `;
@@ -17865,6 +17615,23 @@ document.addEventListener('click', (event) => {
     runClivoraSaveOnce('tratamientoOrder', event.target.closest('#btnConfirmarOrdenTratamiento'), () => saveTratamientoOrder(true));
     return;
   }
+});
+
+// "Limpiar filtros" de Tratamientos: vuelve a los valores iniciales del HTML
+// (todos los estados menos Rechazado, check-in "Todos"). Los selectores y la
+// fecha reciben 'change' para que el widget de Clivora refresque lo que muestra.
+document.addEventListener('click', (event) => {
+  if (!event.target.closest('#tratamientosLimpiarFiltros')) return;
+  const search = document.getElementById('tratamientosSearchInput');
+  if (search) search.value = '';
+  ['tratamientosUbicacionFilter', 'tratamientosSalaFilter', 'tratamientosDoctorFilter', 'tratamientosFechaInput'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.value) { el.value = ''; el.dispatchEvent(new Event('change', { bubbles: true })); }
+  });
+  document.querySelectorAll('.trat-filter-estado').forEach(el => { el.checked = el.defaultChecked; });
+  document.querySelectorAll('.trat-filter-checkin').forEach(el => { el.checked = el.defaultChecked; });
+  updateTratamientosFilterOptions();
+  renderTratamientosTable();
 });
 
 // Filtro de Fecha de Tratamientos: en fase de captura (true) porque el

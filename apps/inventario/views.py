@@ -105,7 +105,7 @@ class StockQuantViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewse
     serializer_class = StockQuantSerializer
 
     def get_queryset(self):
-        qs = StockQuant.objects.select_related('product', 'location__parent', 'lot').exclude(quantity=0).filter(
+        qs = StockQuant.objects.select_related('product__uom', 'location__parent', 'lot').exclude(quantity=0).filter(
             location__clinica=active_clinica(self.request))
         p = self.request.query_params
         if p.get('q'):

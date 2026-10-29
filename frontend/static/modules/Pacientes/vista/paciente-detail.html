@@ -101,14 +101,30 @@
 
 <!-- ACTION BUTTONS -->
 <section class="patient-actions-row">
-  <button class="btn-action-pill" id="fichaIngresoBtn">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2">
-      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-      <polyline points="14 2 14 8 20 8" />
-      <line x1="8" y1="13" x2="16" y2="13" />
-      <line x1="8" y1="17" x2="12" y2="17" />
+  <!-- Abre "Agendar Cita" con el paciente y su médico asignado ya cargados
+       (ver agendarCitaPacienteBtn en app.js). -->
+  <button class="btn-action-pill" id="agendarCitaPacienteBtn">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+      <line x1="12" y1="14" x2="12" y2="18" />
+      <line x1="10" y1="16" x2="14" y2="16" />
     </svg>
-    Ficha de Ingreso
+    <span>Agendar cita</span>
+  </button>
+
+  <button class="btn-action-pill" id="fichaIngresoBtn">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="8" y="2" width="8" height="4" rx="1" />
+      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+      <path d="M12 11h4" />
+      <path d="M12 16h4" />
+      <path d="M8 11h.01" />
+      <path d="M8 16h.01" />
+    </svg>
+    <span>Ficha de Ingreso</span>
   </button>
 
   <button class="btn-action-pill" id="scrollToExpedienteBtn">
@@ -118,7 +134,7 @@
       <line x1="8" y1="13" x2="16" y2="13" />
       <line x1="8" y1="17" x2="12" y2="17" />
     </svg>
-    Generar Historia
+    <span>Generar Historia</span>
   </button>
 </section>
 

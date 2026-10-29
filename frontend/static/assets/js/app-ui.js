@@ -195,6 +195,90 @@
     check();
   }
 
+  // ── Tablas como tarjetas en celular ─────────────────────────────────────
+  // Cada <td> recibe data-label con el título de su columna (de <thead>) y
+  // la tabla la clase cv-cards; en pantallas < 768px el CSS
+  // (clivora-theme.css) muestra cada renglón como tarjeta con pares
+  // etiqueta / valor. Además se marca:
+  //   cv-card-title   la columna principal (nombre, paciente, producto…), arriba y en grande
+  //   cv-card-actions la de botones (sin título o "Acción"), abajo a la derecha
+  //   cv-card-wide    las que tienen campos para escribir (ocupan el ancho)
+  //   cv-card-hidden  las vacías (sin texto ni botones): no ocupan lugar
+  // Se omiten las tablas con data-cards="custom" (tienen su propio diseño,
+  // p. ej. Existencias) o data-cards="off". Las tablas que se llenan
+  // después (listados, renglones agregados) se procesan al cambiar.
+  const TITLE_COLUMN = /^(nombre|paciente|producto|medicamento|tratamiento|c[oó]digo \/ diagn[oó]stico)/i;
+  const ACTION_COLUMN = /^(acci[oó]n|acciones)?$/i;
+
+  function headerLabels(table) {
+    const row = table.tHead && table.tHead.rows[table.tHead.rows.length - 1];
+    if (!row) return null;
+    const labels = [];
+    [...row.cells].forEach((th) => {
+      const text = th.textContent.replace(/\s+/g, ' ').trim();
+      for (let i = 0; i < (th.colSpan || 1); i += 1) labels.push(text);
+    });
+    return labels;
+  }
+
+  function cardifyTable(table) {
+    if (table.dataset.cards === 'custom' || table.dataset.cards === 'off') return;
+    const labels = headerLabels(table);
+    if (!labels || !labels.length) return;
+    table.classList.add('cv-cards');
+    const titleIndex = labels.findIndex((l) => TITLE_COLUMN.test(l));
+    [...table.tBodies].forEach((tbody) => [...tbody.rows].forEach((tr) => {
+      // Renglón de "Cargando…" / "Sin resultados" (una celda a todo lo ancho).
+      if (tr.cells.length === 1 && tr.cells[0].colSpan > 1) { tr.classList.add('cv-card-message'); return; }
+      let col = 0;
+      [...tr.cells].forEach((td) => {
+        const index = col;
+        const label = labels[index] || '';
+        col += td.colSpan || 1;
+        const wide = Boolean(td.querySelector(
+          'textarea, select, input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), .custom-select-container'));
+        // Un campo para escribir conserva su etiqueta aunque sea la columna principal.
+        const title = index === titleIndex && !wide;
+        const actions = ACTION_COLUMN.test(label);
+        td.classList.toggle('cv-card-title', title);
+        td.classList.toggle('cv-card-actions', actions);
+        td.classList.toggle('cv-card-wide', wide);
+        td.classList.toggle('cv-card-hidden', !title && !td.textContent.trim()
+          && !td.querySelector('button, a, input, select, textarea, img, svg, [data-trat-id]'));
+        if (label && !title && !actions) td.dataset.label = label;
+        else delete td.dataset.label;
+      });
+    }));
+  }
+
+  const pendingTables = new Set();
+  let cardifyScheduled = false;
+  function scheduleCardify(table) {
+    if (table) pendingTables.add(table);
+    if (cardifyScheduled) return;
+    cardifyScheduled = true;
+    requestAnimationFrame(() => {
+      cardifyScheduled = false;
+      pendingTables.forEach(cardifyTable);
+      pendingTables.clear();
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('table').forEach(scheduleCardify);
+    new MutationObserver((mutations) => {
+      mutations.forEach((m) => {
+        const table = m.target.closest && m.target.closest('table');
+        if (table) scheduleCardify(table);
+        m.addedNodes.forEach((node) => {
+          if (node.nodeType !== 1) return;
+          if (node.tagName === 'TABLE') scheduleCardify(node);
+          else node.querySelectorAll && node.querySelectorAll('table').forEach(scheduleCardify);
+        });
+      });
+    }).observe(document.body, { childList: true, subtree: true });
+  });
+
   window.ClivoraUI = {
     API, $, esc, api, alertError, query, money, qty, dateShort, dateTime, debounce, openModal, closeModal,
     setBusy, emptyRow, fillSelect, formValues, fillForm, setPager, loadMe, confirmDialog, watchView,

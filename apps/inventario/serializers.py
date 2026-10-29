@@ -65,14 +65,15 @@ class LotSerializer(serializers.ModelSerializer):
 class StockQuantSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.name', read_only=True)
     product_code = serializers.CharField(source='product.code', read_only=True)
+    uom_name = serializers.CharField(source='product.uom.name', read_only=True, default='')
     location_name = serializers.CharField(source='location.__str__', read_only=True)
     lot_name = serializers.CharField(source='lot.name', read_only=True, default='')
     expiration_date = serializers.DateField(source='lot.expiration_date', read_only=True, default=None)
 
     class Meta:
         model = StockQuant
-        fields = ['id', 'product', 'product_name', 'product_code', 'location', 'location_name', 'lot', 'lot_name',
-                  'expiration_date', 'quantity', 'updated_at']
+        fields = ['id', 'product', 'product_name', 'product_code', 'uom_name', 'location', 'location_name', 'lot',
+                  'lot_name', 'expiration_date', 'quantity', 'updated_at']
 
 
 class StockMoveSerializer(serializers.ModelSerializer):

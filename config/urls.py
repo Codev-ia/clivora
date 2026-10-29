@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from apps.accounts import seguridad
+from apps.accounts import medicos, seguridad
 from apps.accounts import views as acc
 from apps.web import urls as web_urls
 from apps.core import compat
@@ -36,6 +36,8 @@ router.register('core/lugares', core_views.LugarViewSet, basename='lugar')
 router.register('core/salas', core_views.SalaViewSet, basename='sala')
 router.register('usuarios', acc.UserViewSet, basename='usuario')
 router.register('roles', acc.RoleViewSet, basename='rol')
+router.register('medicos', medicos.MedicoViewSet, basename='medico')
+router.register('especialidades', medicos.EspecialidadViewSet, basename='especialidad')
 router.register('inventario/unidades', inv.UnitOfMeasureViewSet)
 router.register('inventario/categorias', inv.ProductCategoryViewSet)
 router.register('inventario/productos', inv.ProductViewSet, basename='producto')
@@ -141,6 +143,7 @@ urlpatterns = [
     path('clivora/cita_files/<int:archivo_id>', agenda.cita_archivo_descargar),
     path('clivora/patient_files/<int:rec_id>', archivos.archivo_descargar),
     path('clivora/patient_photo/<int:patient_id>', pac.foto),
+    path('clivora/medico_firma/<int:user_id>', medicos.firma),
     path('', include(web_urls.urlpatterns)),
     *web_urls.fallback_urlpatterns,
 ]

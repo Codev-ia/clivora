@@ -204,6 +204,7 @@
     $('invTabStock').classList.toggle('active', tab === 'stock');
     $('invTabMoves').classList.toggle('active', tab === 'moves');
     $('invStockTable').style.display = tab === 'stock' ? '' : 'none';
+    $('invStockTable').parentElement.classList.toggle('inv-stock-cards', tab === 'stock');
     $('invMovesTable').style.display = tab === 'moves' ? '' : 'none';
     document.querySelectorAll('.inv-tab-stock').forEach((el) => { el.style.display = tab === 'stock' ? '' : 'none'; });
     document.querySelectorAll('.inv-tab-moves').forEach((el) => { el.style.display = tab === 'moves' ? '' : 'none'; });
@@ -240,14 +241,16 @@
         })}`);
         $('invCount').textContent = data.count.toLocaleString('es-MX');
         setPager('inv', inv.page, data.count, inv.pageSize);
+        // data-label y las clases inv-stock-* acomodan cada fila como tarjeta
+        // en celular (inventario.css); en escritorio es una tabla normal.
         body.innerHTML = data.results.length ? data.results.map((q) => `
-          <tr>
-            <td class="inv-code">${esc(q.product_code || '')}</td>
-            <td class="inv-name">${esc(q.product_name)}</td>
-            <td>${esc(q.location_name)}</td>
-            <td class="inv-muted">${esc(q.lot_name)}</td>
-            <td class="${expiryClass(q.expiration_date)}">${dateShort(q.expiration_date)}</td>
-            <td class="inv-num ${Number(q.quantity) < 0 ? 'inv-negative' : ''}">${qty(q.quantity)}</td>
+          <tr class="inv-stock-row">
+            <td class="inv-code inv-stock-code" data-label="Código">${esc(q.product_code || '') || '—'}</td>
+            <td class="inv-name inv-stock-name">${esc(q.product_name)}</td>
+            <td class="inv-stock-location" data-label="Ubicación">${esc(q.location_name)}</td>
+            <td class="inv-muted inv-stock-lot" data-label="Lote">${esc(q.lot_name) || '—'}</td>
+            <td class="${expiryClass(q.expiration_date)} inv-stock-expiry" data-label="Caducidad">${dateShort(q.expiration_date) || '—'}</td>
+            <td class="inv-num inv-stock-qty ${Number(q.quantity) < 0 ? 'inv-negative' : ''}" data-label="Cantidad"><span class="inv-qty-pill">${qty(q.quantity)}${q.uom_name ? ` <small>${esc(q.uom_name)}</small>` : ''}</span></td>
           </tr>`).join('') : emptyRow(6, 'No hay existencias registradas. Registra una entrada para empezar.');
       } catch (e) { body.innerHTML = emptyRow(6, e.message); }
     } else {

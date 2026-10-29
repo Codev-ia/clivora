@@ -76,13 +76,15 @@ cp .env.example .env                 # ajustar SECRET_KEY, DEBUG=True, DATABASE_
 | `/api/v1/inventario/movimientos/` | Entradas, salidas, traslados. Se crean pendientes; `POST …/<id>/confirmar/` mueve el inventario, `…/<id>/cancelar/` los descarta. `POST …/ajuste/` = conteo físico. |
 | `/api/v1/core/clinicas/`, `core/lugares/`, `core/salas/` | Clínicas, lugares de atención y salas. |
 | `/api/v1/usuarios/`, `/api/v1/roles/` | Usuarios (roles y clínicas permitidas) y catálogo de roles. |
+| `/api/v1/medicos/` | Médicos y sus datos profesionales (`?q=`, `?especialidad=<id>\|none`). `POST/DELETE …/<id>/firma/` sube o quita la firma; `…/enfermeras/` = opciones de enfermera asignada. |
+| `/api/v1/especialidades/` | Catálogo de especialidades (`?active=0\|all`). Borrar = desactivar. |
 | `POST /api/v1/me/clinica/` | Cambia la clínica activa del usuario. |
 | `/api/v1/precios/listas/`, `productos/?pricelist=`, `aseguradoras/` | Listas de precios y sus precios por producto. |
 | `/api/v1/precios/calcular/?pricelist=&product=` | Precio de un producto en una lista. |
 | `/clivora/api/...` | Rutas que usa el frontend (pacientes, agenda, expediente, farmacia…). |
 
 Permisos por rol: **Administrador** configura todo (clínicas, lugares,
-usuarios, productos, precios); **Farmacia** administra inventario;
+usuarios, médicos, especialidades, productos, precios); **Farmacia** administra inventario;
 **Comercial** administra listas de precios; **Acceso a Clivora** permite entrar.
 
 ## Listas de precios

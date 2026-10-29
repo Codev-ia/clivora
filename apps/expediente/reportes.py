@@ -15,6 +15,7 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.decorators.http import require_GET
 
+from apps.accounts.medicos import firma_path, resumen as resumen_medico
 from apps.core.clinica import active_clinica
 from apps.core.html import limpiar as limpiar_html
 
@@ -190,7 +191,14 @@ def _pdf(request, paciente, titulo, folio, secciones, firma, nombre_archivo):
 
 
 def _firma_medico(medico, leyenda='Firma del médico'):
-    return {'caption': leyenda, 'name': _nombre(medico)}
+    """Firma con los datos de la pantalla Médicos: imagen de la firma,
+    especialidad y cédulas (lo que el médico no tenga capturado no aparece)."""
+    perfil = resumen_medico(medico)
+    cedulas = ' · '.join(p for p in (
+        perfil['cedula_profesional'] and f"Céd. Prof. {perfil['cedula_profesional']}",
+        perfil['cedula_especialidad'] and f"Céd. Esp. {perfil['cedula_especialidad']}") if p)
+    return {'caption': leyenda, 'name': _nombre(medico), 'imagen': firma_path(medico),
+            'especialidad': perfil['especialidad'], 'cedulas': cedulas}
 
 
 # ── Reportes ──────────────────────────────────────────────────────────────
@@ -375,7 +383,7 @@ def nota_enfermeria(request, patient_id, rec_id):
         inicio=[('Fecha y hora', _fecha_hora(nota.created_at))]))]
     secciones += _secciones_valoracion(nota) if inicial else _secciones_registro(nota)
     titulo = 'Evaluación inicial de enfermería' if inicial else 'Registro clínico de enfermería'
-    firma = {'caption': 'Firma del personal de enfermería', 'name': _nombre(nota.created_by)}
+    firma = _firma_medico(nota.created_by, 'Firma del personal de enfermería')
     return _pdf(request, paciente, titulo, nota.pk, secciones, firma,
                 'Evaluacion-inicial' if inicial else 'Registro-clinico-enfermeria')
 

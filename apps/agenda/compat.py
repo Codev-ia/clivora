@@ -18,7 +18,7 @@ from django.views.decorators.clickjacking import xframe_options_sameorigin
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
-from apps.accounts.models import User
+from apps.accounts.models import Especialidad, User
 from apps.accounts.roles import ROLES
 from apps.web.roles import has_role, is_admin
 from apps.web.views import render_app_page
@@ -304,12 +304,13 @@ def catalogos(request):
         'types': [{'id': k, 'name': v} for k, v in TIPO_LABEL.items()],
         'reasons': [{'id': m.pk, 'name': m.name, 'type': 'C' if m.tipo == 'consulta' else 'T'}
                     for m in MotivoCita.objects.filter(active=True)],
-        'doctors': [{'id': u.pk, 'name': _nombre(u), 'specialtyId': False}
-                    for u in _usuarios_con('group_medicos')],
+        'doctors': [{'id': u.pk, 'name': _nombre(u),
+                     'specialtyId': getattr(getattr(u, 'perfil_medico', None), 'especialidad_id', None) or False}
+                    for u in _usuarios_con('group_medicos').select_related('perfil_medico')],
         'nurses': [{'id': u.pk, 'name': _nombre(u)}
                    for u in _usuarios_con('group_enfermeria', 'group_jefa_enfermeria')],
         'rejectionReasons': [{'id': r.pk, 'name': r.name} for r in MotivoRechazo.objects.filter(active=True)],
-        'specialties': [],
+        'specialties': [{'id': e.pk, 'name': e.name} for e in Especialidad.objects.filter(active=True)],
         # Nuevo: lugares y salas de la clínica activa (Configuración).
         'lugares': _lugares_payload(active_clinica(request)),
     })
